@@ -13,14 +13,11 @@ import android.widget.TextView;
 
 import com.pystarter.app.game.SoundFx;
 
-import java.util.WeakHashMap;
-
 /**
  * 手机端代码快捷符号栏：解决手机输入法切英文、打缩进/冒号/引号/括号麻烦的问题。
+ * 不使用任何静态 Map 缓存 View，避免 Activity 销毁后因监听器反向引用导致内存泄漏。
  */
 public final class CodeToolbar {
-
-    private static final WeakHashMap<EditText, View> TOOLBARS = new WeakHashMap<>();
 
     private static final String[][] KEYS = {
             {"缩进", "    ", "4"},
@@ -79,13 +76,16 @@ public final class CodeToolbar {
             row.addView(btn);
         }
         scroll.addView(row);
+        scroll.setTag("code_toolbar_" + codeInput.getId());
         parent.addView(scroll, idx);
-        TOOLBARS.put(codeInput, scroll);
     }
 
     /** 控制快捷符号栏随代码编辑框一起显示或隐藏（避免在选择题/填空题里露出）。 */
     public static void setVisible(EditText codeInput, boolean visible) {
-        View bar = TOOLBARS.get(codeInput);
+        if (codeInput == null || !(codeInput.getParent() instanceof ViewGroup)) {
+            return;
+        }
+        View bar = ((ViewGroup) codeInput.getParent()).findViewWithTag("code_toolbar_" + codeInput.getId());
         if (bar != null) {
             bar.setVisibility(visible ? View.VISIBLE : View.GONE);
         }

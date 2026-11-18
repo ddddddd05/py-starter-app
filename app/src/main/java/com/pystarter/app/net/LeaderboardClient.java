@@ -30,6 +30,7 @@ import okhttp3.Response;
 public final class LeaderboardClient {
 
     public static final String DEFAULT_SERVER_URL = "http://10.0.2.2:8080";
+    // 仅供演示与防入门级明文抓包：静态密钥写在客户端 APK 中可通过反编译获取，不能替代真正的服务端鉴权
     private static final String SIGN_SECRET = "PyStarter-2026-Secret";
     private static final String PREFS = "leaderboard_client";
     private static final String KEY_PLAYER_ID = "player_id";

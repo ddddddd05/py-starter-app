@@ -33,9 +33,10 @@ public class LeaderboardService {
 
     /**
      * 提交或更新成绩：
-     * 1. @CacheEvict 在更新数据库后自动淘汰排行榜缓存，保证读写一致性；
-     * 2. @Transactional 保证先查后改的原子性；
-     * 3. 仅在星数或经验真正提升时刷新 updatedAt，避免重复上传刷新时间戳导致同分排名下降。
+     * 1. 基础签名校验（仅防入门级明文抓包，因客户端密钥可被反编译，仅供演示）；
+     * 2. @CacheEvict 在更新数据库后自动淘汰排行榜缓存，保证读写一致性；
+     * 3. @Transactional 保证先查后改的原子性；
+     * 4. 仅在星数或经验真正提升时刷新 updatedAt，避免重复上传刷新时间戳导致同分排名下降。
      */
     @Transactional
     @CacheEvict(value = "leaderboard", allEntries = true)
