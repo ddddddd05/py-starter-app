@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Python 起步</string>
+    <string name="channel_name">学习提醒</string>
+    <string name="channel_desc">每天晚上提醒你学一会儿 Python</string>
+    <string name="remind_title">今天还没学 Python 哦</string>
+    <string name="remind_text">花 5 分钟做一道题，保持连续学习</string>
+
+    <string name="streak_days">已经连续学习 %1$d 天，继续加油</string>
+    <string name="streak_zero">从第 1 关开始吧，每天一点点</string>
+    <string name="lesson_done">已完成</string>
+    <string name="lesson_progress">%1$d / %2$d</string>
+    <string name="lesson_title">第 %1$d 关：%2$s</string>
+    <string name="example">示例代码</string>
+    <string name="run_example">运行看看</string>
+    <string name="practice">动手练习</string>
+    <string name="question_label">第 %1$d 题 · %2$s</string>
+    <string name="type_choice">选择题</string>
+    <string name="type_fill">填空题</string>
+    <string name="type_code">自己写代码</string>
+
+    <string name="question_title">第 %1$d 关 · 第 %2$d / %3$d 题</string>
+    <string name="fill_hint">在这里填空</string>
+    <string name="code_hint">在这里写代码</string>
+    <string name="run">运行</string>
+    <string name="submit">提交</string>
+    <string name="running">运行中……</string>
+    <string name="no_output">（没有输出）</string>
+    <string name="answer_first">先作答再提交哦</string>
+    <string name="expected_output">题目要求显示：\n%1$s</string>
+    <string name="ask_teacher">不会？问 AI 老师</string>
+    <string name="ask_more">还是不会，再给一点提示</string>
+    <string name="ask_again">再看一遍提示</string>
+    <string name="teacher_thinking">老师正在看你的答案……</string>
+    <string name="hint_level">AI 老师 · 第 %1$d 级提示</string>
+    <string name="next">下一题</string>
+
+    <string name="my_progress">我的进度</string>
+    <string name="correct_count">已答对 %1$d / %2$d 题</string>
+    <string name="wrong_book">错题本</string>
+    <string name="wrong_empty">暂时没有错题，真棒</string>
+    <string name="wrong_item">第 %1$d 关 第 %2$d 题（提交了 %3$d 次）</string>
+
+    <string name="settings">设置</string>
+    <string name="key_explain">填写 API Key 后，AI 老师会根据你的答案给出提示；不填也能用，会显示每道题自带的提示。Key 只保存在这台手机上。</string>
+    <string name="api_key">AI 老师的 API Key</string>
+    <string name="base_url">接口地址</string>
+    <string name="model">模型名称</string>
+    <string name="reminder">每天晚上 8 点提醒我学习</string>
+    <string name="save">保存</string>
+    <string name="saved">已保存</string>
+</resources>

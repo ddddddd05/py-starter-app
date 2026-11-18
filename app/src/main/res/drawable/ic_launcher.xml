@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 应用图标：Python 蓝底 + 黄色代码符号 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp" android:viewportWidth="48" android:viewportHeight="48">
+    <path android:fillColor="#3776AB" android:pathData="M10,2h28a8,8 0,0 1,8 8v28a8,8 0,0 1,-8 8h-28a8,8 0,0 1,-8 -8v-28a8,8 0,0 1,8 -8z" />
+    <path android:fillColor="#FFD43B" android:pathData="M18.8,33.2L9.6,24l9.2,-9.2L16,12l-12,12 12,12 2.8,-2.8zM29.2,33.2l9.2,-9.2 -9.2,-9.2L32,12l12,12 -12,12 -2.8,-2.8z" />
+</vector>

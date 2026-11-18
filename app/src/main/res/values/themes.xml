@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3，跟随系统自动切换浅色 / 深色模式 -->
+    <style name="Theme.PyStarter" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand</item>
+    </style>
+
+    <!-- 代码块：等宽字体、浅灰底 -->
+    <style name="CodeText">
+        <item name="android:background">@drawable/bg_code</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textColor">@color/code_text</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+    </style>
+
+    <!-- 运行结果：深色底，像终端 -->
+    <style name="OutputText">
+        <item name="android:background">@drawable/bg_output</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textColor">@color/output_text</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textIsSelectable">true</item>
+    </style>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand">#3776AB</color>          <!-- Python 蓝 -->
+    <color name="brand_light">#E3EEF8</color>
+    <color name="good">#2E7D32</color>
+    <color name="bad">#C62828</color>
+    <color name="code_bg">#F3F4F6</color>
+    <color name="code_text">#1F2937</color>
+    <color name="output_bg">#1E293B</color>
+    <color name="output_text">#E2E8F0</color>
+</resources>
