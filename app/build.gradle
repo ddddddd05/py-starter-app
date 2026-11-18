@@ -13,8 +13,8 @@ android {
         applicationId 'com.pystarter.app'
         minSdk 24                 // Android 7.0 及以上
         targetSdk 35
-        versionCode 2
-        versionName '1.1'
+        versionCode 3
+        versionName '1.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         // Chaquopy 需要指定打包哪些 CPU 架构：真机多为 arm64，电脑上的模拟器是 x86_64
@@ -23,9 +23,46 @@ android {
         }
     }
 
+    // 正式签名：密钥和密码不进仓库，从 keystore.properties（已加入 .gitignore）或环境变量读取。
+    // 两者都没有时（比如别人克隆下来自己编译），正式版临时用调试密钥签名，保证能打包和测试。
+    def keyProps = new Properties()
+    def keyFile = rootProject.file('keystore.properties')
+    if (keyFile.exists()) {
+        keyFile.withInputStream { keyProps.load(it) }
+    }
+    def keyValue = { String name -> keyProps.getProperty(name) ?: System.getenv('PYSTARTER_' + name.toUpperCase()) }
+    def hasReleaseKey = keyValue('storeFile') != null
+
+    signingConfigs {
+        release {
+            if (hasReleaseKey) {
+                storeFile rootProject.file(keyValue('storeFile'))
+                storePassword keyValue('storePassword')
+                keyAlias keyValue('keyAlias')
+                keyPassword keyValue('keyPassword')
+            }
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            // R8：删除没用到的代码、缩短类名，安装包更小
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig hasReleaseKey ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+
+    // 按 CPU 架构拆分安装包：手机只下载自己需要的那一份（arm64 真机 / x86_64 模拟器），
+    // 同时保留一个通用包，方便直接发给别人安装
+    splits {
+        abi {
+            // 只在打正式版时拆分；调试版保持一个 app-debug.apk，测试和 CI 不受影响
+            enable gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
+            reset()
+            include 'arm64-v8a', 'x86_64'
+            universalApk true
         }
     }
 

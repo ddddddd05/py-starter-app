@@ -14,3 +14,8 @@ __pycache__/
 
 # 录屏原始素材（只上传剪好的 docs/demo.mp4 和 docs/demo.gif）
 docs/raw/
+
+# 正式签名的密钥和密码（绝对不能上传）
+keystore.properties
+*.jks
+*.keystore
