@@ -1,11 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material 3，跟随系统自动切换浅色 / 深色模式 -->
-    <style name="Theme.PyStarter" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/brand</item>
+    <!-- 像素复古主题：固定深色、方角、等宽粗体字 -->
+    <style name="Theme.PyStarter" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/px_blue</item>
+        <item name="colorOnPrimary">@color/px_black</item>
+        <item name="colorSecondary">@color/px_yellow</item>
+        <item name="colorSurface">@color/px_panel</item>
+        <item name="colorOnSurface">@color/px_white</item>
+        <item name="android:colorBackground">@color/px_bg</item>
+        <item name="android:windowBackground">@color/px_bg</item>
+        <item name="android:statusBarColor">@color/px_black</item>
+        <item name="android:navigationBarColor">@color/px_black</item>
+        <item name="shapeAppearanceSmallComponent">@style/PxShape</item>
+        <item name="shapeAppearanceMediumComponent">@style/PxShape</item>
+        <item name="shapeAppearanceCornerSmall">@style/PxShape</item>
+        <item name="shapeAppearanceCornerMedium">@style/PxShape</item>
+        <item name="shapeAppearanceCornerLarge">@style/PxShape</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/PxShape</item>
     </style>
 
-    <!-- 代码块：等宽字体、浅灰底 -->
+    <style name="PxShape">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
+    <!-- 像素字：等宽 + 粗体 -->
+    <style name="PxText">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/px_white</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineSpacingMultiplier">1.25</item>
+    </style>
+
+    <style name="PxText.Small">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/px_silver</item>
+    </style>
+
+    <style name="PxText.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/px_yellow</item>
+    </style>
+
+    <style name="PxText.Body">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingMultiplier">1.4</item>
+    </style>
+
+    <!-- 像素按钮：方块 + 硬阴影，按下时阴影消失、按钮下沉 -->
+    <style name="PxButton" parent="PxText">
+        <item name="android:gravity">center</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textColor">@color/px_black</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:background">@drawable/px_btn_blue</item>
+    </style>
+
+    <style name="PxButton.Green"><item name="android:background">@drawable/px_btn_green</item></style>
+    <style name="PxButton.Red">
+        <item name="android:background">@drawable/px_btn_red</item>
+        <item name="android:textColor">@color/px_white</item>
+    </style>
+    <style name="PxButton.Yellow"><item name="android:background">@drawable/px_btn_yellow</item></style>
+    <style name="PxButton.Gray">
+        <item name="android:background">@drawable/px_btn_gray</item>
+        <item name="android:textColor">@color/px_white</item>
+    </style>
+
+    <!-- 代码块 -->
     <style name="CodeText">
         <item name="android:background">@drawable/bg_code</item>
         <item name="android:fontFamily">monospace</item>
@@ -15,7 +85,7 @@
         <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
-    <!-- 运行结果：深色底，像终端 -->
+    <!-- 运行结果：黑底绿字，像老式终端 -->
     <style name="OutputText">
         <item name="android:background">@drawable/bg_output</item>
         <item name="android:fontFamily">monospace</item>
