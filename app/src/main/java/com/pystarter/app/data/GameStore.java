@@ -62,7 +62,7 @@ public final class GameStore {
 
     /** 学习解锁：第 1 关一开始就开放，之后要先通过上一关的挑战。 */
     public static boolean isLearnUnlocked(Context ctx, int lessonId) {
-        return lessonId == 1 || stars(ctx, lessonId - 1) > 0;
+        return learnUnlocked(lessonId, lessonId == 1 ? 0 : stars(ctx, lessonId - 1));
     }
 
     /** 挑战解锁：这一关学完才能挑战。 */
@@ -169,17 +169,9 @@ public final class GameStore {
      */
     public static Clear recordClear(Context ctx, int lessonId, int stars, int battlesWon, int hintsUsed,
                                     int streakDays) {
-        Clear c = new Clear();
-        c.stars = stars;
-        c.oldStars = stars(ctx, lessonId);
-        c.battleXp = battlesWon * 10;
-        c.clearXp = c.oldStars == 0 ? 20 : 0;
-        c.starXp = Math.max(0, stars - c.oldStars) * 10;
-
         int oldXp = xp(ctx);
-        c.oldLevel = levelOf(oldXp);
+        Clear c = computeClear(stars(ctx, lessonId), stars, battlesWon, oldXp);
         int newXp = oldXp + c.totalXp();
-        c.newLevel = levelOf(newXp);
 
         JSONObject s = starsJson(ctx);
         try {
@@ -197,6 +189,28 @@ public final class GameStore {
         return c;
     }
 
+    /**
+     * 结算规则（纯计算，方便单元测试）：
+     * 每打赢一战 10 经验；首次通关奖励 20；星级奖励只给“比以前多出来的星”，每颗 10。
+     * 所以反复刷同一关拿不到过关奖励和星级奖励，只有战斗经验。
+     */
+    public static Clear computeClear(int oldStars, int stars, int battlesWon, int oldXp) {
+        Clear c = new Clear();
+        c.stars = stars;
+        c.oldStars = oldStars;
+        c.battleXp = battlesWon * 10;
+        c.clearXp = oldStars == 0 ? 20 : 0;
+        c.starXp = Math.max(0, stars - oldStars) * 10;
+        c.oldLevel = levelOf(oldXp);
+        c.newLevel = levelOf(oldXp + c.totalXp());
+        return c;
+    }
+
+    /** 学习解锁规则（纯计算）：第 1 关一开始就开放，之后要先通过上一关。 */
+    public static boolean learnUnlocked(int lessonId, int previousLessonStars) {
+        return lessonId == 1 || previousLessonStars > 0;
+    }
+
     /** 复仇怪打赢的额外经验。 */
     public static void addXp(Context ctx, int amount) {
         prefs(ctx).edit().putInt(KEY_XP, xp(ctx) + amount).apply();
@@ -212,27 +226,11 @@ public final class GameStore {
     public static List<String> checkBadges(Context ctx, int streakDays) {
         Set<String> owned = new HashSet<>(badges(ctx));
         List<String> fresh = new ArrayList<>();
-        int cleared = 0;
-        int three = 0;
+        int[] starsByLesson = new int[LESSON_COUNT];
         for (int i = 1; i <= LESSON_COUNT; i++) {
-            int st = stars(ctx, i);
-            if (st > 0) {
-                cleared++;
-            }
-            if (st == 3) {
-                three++;
-            }
+            starsByLesson[i - 1] = stars(ctx, i);
         }
-        boolean[] reached = {
-                cleared >= 1,
-                three >= 1,
-                stars(ctx, 4) > 0,
-                stars(ctx, 8) > 0,
-                cleared == LESSON_COUNT,
-                three == LESSON_COUNT,
-                prefs(ctx).getInt(KEY_NO_HINT_RUN, 0) >= 3,
-                streakDays >= 7,
-        };
+        boolean[] reached = reachedBadges(starsByLesson, prefs(ctx).getInt(KEY_NO_HINT_RUN, 0), streakDays);
         for (int i = 0; i < BADGES.length; i++) {
             if (reached[i] && owned.add(BADGES[i][0])) {
                 fresh.add(BADGES[i][1]);
@@ -240,6 +238,33 @@ public final class GameStore {
         }
         prefs(ctx).edit().putStringSet(KEY_BADGES, owned).apply();
         return fresh;
+    }
+
+    /**
+     * 徽章达成规则（纯计算，方便单元测试）。返回值和 BADGES 一一对应。
+     * starsByLesson[i] 是第 i+1 关的最好星级（0 表示没通过）。
+     */
+    public static boolean[] reachedBadges(int[] starsByLesson, int noHintRun, int streakDays) {
+        int cleared = 0;
+        int three = 0;
+        for (int st : starsByLesson) {
+            if (st > 0) {
+                cleared++;
+            }
+            if (st == 3) {
+                three++;
+            }
+        }
+        return new boolean[]{
+                cleared >= 1,
+                three >= 1,
+                starsByLesson.length >= 4 && starsByLesson[3] > 0,
+                starsByLesson.length >= 8 && starsByLesson[7] > 0,
+                cleared == starsByLesson.length,
+                three == starsByLesson.length,
+                noHintRun >= 3,
+                streakDays >= 7,
+        };
     }
 
     // ---------- 复仇怪：答错过的题，在后面的关卡里带着错因标签重新出现 ----------

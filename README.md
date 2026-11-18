@@ -1,5 +1,7 @@
 # Python 起步：像素闯关学 Python 的安卓 App
 
+[![CI](https://github.com/ddddddd05/py-starter-app/actions/workflows/ci.yml/badge.svg)](https://github.com/ddddddd05/py-starter-app/actions/workflows/ci.yml)
+
 一个安卓原生 App：用**像素风闯关游戏**带完全没学过编程的人入门 Python。12 关分 3 章，每关**先学后闯**：小法师用卡片和比喻讲概念、可以动手改代码运行，学会了再去打小怪、精英和 Boss。写的代码**在手机上真实运行**，做错了可以问小精灵（AI 老师）：只给提示、不给答案。
 
 <p align="center">
@@ -67,11 +69,15 @@ tests/test_game.py       闯关层的测试（小练习答案真实运行校验�
 
 ## 测试
 
-```bash
-python -m pytest -q
-```
+| 层 | 命令 | 数量 | 测什么 |
+|---|---|---|---|
+| Python 核心 | `python -m pytest -q` | 137 | 判题、报错翻译、闯关层、单步跟踪器；**题目内容自检**：每道写代码题的参考答案必须通过自己的判题，每道选择题和小练习都真的运行代码核对正确选项 |
+| 安卓单元测试（JUnit） | `./gradlew testDebugUnitTest` | 20 | 星级、结算防刷经验、解锁、徽章、连续打卡等规则（抽成纯函数，在电脑上跑） |
+| 安卓 UI 测试（Espresso） | `./gradlew connectedDebugAndroidTest` | 2 | 在模拟器上走主流程：地图 → 学习 → 小练习 → 挑战 → 答错扣心 → 答对打倒小怪 |
 
-Python 部分 117 个离线测试，其中包括**题目内容自检**：每道“写代码”题的参考答案必须能通过自己的判题；每道选择题都真的运行代码，正确选项必须和真实输出一致；每个填空答案放回模板后代码必须能运行。
+[GitHub Actions](.github/workflows/ci.yml) 每次推送都会自动跑这三层测试，并把调试版 APK 作为构建产物上传。
+
+> 注意：UI 测试会清空 App 的闯关进度，测试结束后 Gradle 还会卸载 App。在自己常用的模拟器或手机上跑之前，先备份数据。
 
 ## 运行
 
