@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 挑战页：上面是战斗场景（主角 vs 怪物、血条），中间是 NPC 对话框和题目，下面是出招按钮。 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/px_black"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/back"
+                style="@style/PxText.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="12dp"
+                android:text="@string/back_arrow" />
+
+            <TextView
+                android:id="@+id/stageText"
+                style="@style/PxText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/hearts"
+                style="@style/PxText.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/px_red" />
+        </LinearLayout>
+
+        <!-- 战斗场景 -->
+        <FrameLayout
+            android:id="@+id/arena"
+            android:layout_width="match_parent"
+            android:layout_height="168dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/px_panel">
+
+            <LinearLayout
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/enemyName"
+                    style="@style/PxText.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@color/px_white" />
+
+                <ProgressBar
+                    android:id="@+id/enemyHp"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="14dp"
+                    android:layout_marginTop="3dp"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressDrawable="@drawable/px_bar"
+                    android:progressTint="@color/px_red" />
+            </LinearLayout>
+
+            <com.pystarter.app.game.PixelSpriteView
+                android:id="@+id/hero"
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="24dp"
+                android:layout_marginBottom="14dp" />
+
+            <com.pystarter.app.game.PixelSpriteView
+                android:id="@+id/enemy"
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="28dp"
+                android:layout_marginBottom="14dp" />
+        </FrameLayout>
+
+        <ScrollView
+            android:id="@+id/scroll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <!-- NPC 对话框：游戏台词 + 原来的大白话说明（保留行号，学得到真正的知识点） -->
+                <LinearLayout
+                    android:id="@+id/dialogBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/px_dialog"
+                    android:orientation="vertical"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/speaker"
+                        style="@style/PxText.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/px_yellow" />
+
+                    <TextView
+                        android:id="@+id/npcLine"
+                        style="@style/PxText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/feedback"
+                        style="@style/PxText.Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/px_silver"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/prompt"
+                    style="@style/PxText.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/codeBlock"
+                    style="@style/CodeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/options"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/fillTemplate"
+                    style="@style/CodeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/fillInput"
+                    style="@style/CodeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/fill_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="textNoSuggestions|textVisiblePassword"
+                    android:maxLines="1"
+                    android:textColorHint="@color/px_stone"
+                    android:visibility="gone" />
+
+                <!-- 写代码：关掉输入法的自动大写和联想，否则手机会把 print 改成 Print -->
+                <EditText
+                    android:id="@+id/codeEditor"
+                    style="@style/CodeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="top|start"
+                    android:hint="@string/code_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
+                    android:minLines="5"
+                    android:textColorHint="@color/px_stone"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/output"
+                    style="@style/OutputText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/px_black"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:id="@+id/helpRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/notes"
+                    style="@style/PxButton.Gray"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/open_notes"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/hint"
+                    style="@style/PxButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/ask_fairy"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/actionRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/run"
+                    style="@style/PxButton.Green"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/try_run"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/attack"
+                    style="@style/PxButton.Red"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/attack" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/continueBtn"
+                style="@style/PxButton.Green"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/continue_battle"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

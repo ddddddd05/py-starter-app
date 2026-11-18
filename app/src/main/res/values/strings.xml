@@ -8,16 +8,9 @@
 
     <string name="streak_days">已经连续学习 %1$d 天，继续加油</string>
     <string name="streak_zero">从第 1 关开始吧，每天一点点</string>
-    <string name="lesson_done">已完成</string>
-    <string name="lesson_progress">%1$d / %2$d</string>
     <string name="lesson_title">第 %1$d 关：%2$s</string>
     <string name="example">示例代码</string>
     <string name="run_example">运行看看</string>
-    <string name="practice">动手练习</string>
-    <string name="question_label">第 %1$d 题 · %2$s</string>
-    <string name="type_choice">选择题</string>
-    <string name="type_fill">填空题</string>
-    <string name="type_code">自己写代码</string>
 
     <string name="question_title">第 %1$d 关 · 第 %2$d / %3$d 题</string>
     <string name="fill_hint">在这里填空</string>
@@ -35,7 +28,7 @@
     <string name="hint_level">AI 老师 · 第 %1$d 级提示</string>
     <string name="next">下一题</string>
 
-    <string name="my_progress">我的进度</string>
+    <string name="my_progress">进度与徽章</string>
     <string name="correct_count">已答对 %1$d / %2$d 题</string>
     <string name="wrong_book">错题本</string>
     <string name="wrong_empty">暂时没有错题，真棒</string>
@@ -49,4 +42,96 @@
     <string name="reminder">每天晚上 8 点提醒我学习</string>
     <string name="save">保存</string>
     <string name="saved">已保存</string>
+    <!-- ===== 闯关地图 ===== -->
+    <string name="nav_progress">徽章 / 错题本</string>
+    <string name="hud_level">Lv.%1$d %2$s</string>
+    <string name="hud_stars">★ %1$d/%2$d</string>
+    <string name="hud_xp">经验 %1$d/%2$d　·　连续打卡 %3$d 天</string>
+    <string name="chapter_banner">第 %1$d 章 · %2$s</string>
+    <string name="node_locked">锁</string>
+    <string name="node_boss">%1$s [BOSS]</string>
+    <string name="node_status_locked">未解锁</string>
+    <string name="node_status_cleared">已通关</string>
+    <string name="node_status_challenge">已学完，可以挑战</string>
+    <string name="node_status_learn">点我开始学习</string>
+    <string name="locked_toast">先通过第 %1$d 关的挑战</string>
+    <string name="dialog_best">最好成绩：%1$s\n想复习一下，还是直接挑战？</string>
+    <string name="dialog_ready">已经学完了，准备好挑战了吗？</string>
+    <string name="go_challenge">挑战</string>
+    <string name="go_review">回去复习</string>
+
+    <!-- ===== 学习 ===== -->
+    <string name="back_arrow">&lt;</string>
+    <string name="npc_name">小法师</string>
+    <string name="npc_analogy">小法师打了个比方</string>
+    <string name="step_of">%1$d/%2$d</string>
+    <string name="prev_step">上一步</string>
+    <string name="next_step">下一步 &gt;</string>
+    <string name="learn_try">动手试一试：下面的代码可以随便改，点“运行”看看会发生什么。改坏了也没关系，点“恢复原样”就行。</string>
+    <string name="example_input_label">这段代码用到了 input()，会停下来等你输入。在下面写好要输入的内容（一行对应一次 input）：</string>
+    <string name="example_input_hint">例如：你的名字</string>
+    <string name="example_input_needed">这段代码会问你问题！先在黄色说明下面的输入框里写好你的回答，再点运行。</string>
+    <string name="reset_example">恢复原样</string>
+    <string name="learned_go">我学会了，去挑战！</string>
+    <string name="practice_first">先做一下这道小练习吧，答错也没关系～</string>
+    <string name="practice_right">答对了！%1$s</string>
+    <string name="practice_wrong">正确答案已经标成绿色。%1$s</string>
+    <string name="practice_npc_right">很好！你已经掌握了，可以去挑战了。</string>
+    <string name="practice_npc_wrong">没关系，看看解释。挑战时卡住了还能翻笔记。</string>
+
+    <!-- ===== 挑战 ===== -->
+    <string name="stage_title">第 %1$d 关 · 第 %2$d 战 · %3$s</string>
+    <string name="stage_revenge">复仇战 · 来自第 %1$d 关</string>
+    <string name="npc_fairy">小精灵</string>
+    <string name="npc_fairy_tag">小精灵 · 遇到了 %1$s</string>
+    <string name="battle_intro_0">%1$s 跳出来了！选出正确答案就能打倒它。</string>
+    <string name="battle_intro_1">%1$s 挡住了去路！把咒语里缺的那个词补上。</string>
+    <string name="battle_intro_2">%1$s 出现了！自己写出咒语打败它。可以先“试运行”，不会扣血。</string>
+    <string name="revenge_enemy">复仇怪 · %1$s</string>
+    <string name="revenge_intro">以前打败过你的 %1$s 回来了！这次一定能赢。（打输不扣血）</string>
+    <string name="revenge_win">%1$s 被彻底征服了！</string>
+    <string name="open_notes">翻笔记</string>
+    <string name="ask_fairy">问小精灵</string>
+    <string name="ask_fairy_more">再给点提示</string>
+    <string name="ask_fairy_again">再看一遍提示</string>
+    <string name="hint_level_fairy">小精灵 · 第 %1$d 级提示</string>
+    <string name="try_run">试运行</string>
+    <string name="attack">出招！</string>
+    <string name="continue_battle">继续前进 &gt;</string>
+    <string name="finish_battle">完成挑战 &gt;</string>
+    <string name="quit_confirm">现在离开，这次挑战就不算了。确定要离开吗？</string>
+    <string name="quit_yes">离开</string>
+    <string name="quit_no">继续战斗</string>
+    <string name="notes_title_first">笔记（翻笔记后这一关最多 2 星）</string>
+    <string name="notes_title">笔记</string>
+    <string name="notes_close">我记起来了</string>
+
+    <!-- ===== 结算 ===== -->
+    <string name="result_lesson">第 %1$d 关</string>
+    <string name="result_win">关卡通过！</string>
+    <string name="result_fail">挑战失败</string>
+    <string name="reward_battle">战斗胜利</string>
+    <string name="reward_clear">首次通关奖励</string>
+    <string name="reward_star">星级提升</string>
+    <string name="reward_revenge">征服 %1$s</string>
+    <string name="xp_plus">+%1$d XP</string>
+    <string name="level_up">升级！Lv.%1$d %2$s</string>
+    <string name="new_badge">获得徽章：%1$s</string>
+    <string name="next_lesson">下一关 &gt;</string>
+    <string name="all_done">全部通关！回到地图</string>
+    <string name="retry_for_stars">再挑战一次，拿满星</string>
+    <string name="retry">再挑战</string>
+    <string name="back_to_map">回到地图</string>
+    <string name="reason_perfect">没有失误，也没看提示，完美！</string>
+    <string name="reason_mistakes">答错了 %1$d 次</string>
+    <string name="reason_hints">看了 %1$d 次提示</string>
+    <string name="reason_notes">翻了笔记</string>
+    <string name="reason_retry">再挑战一次，就有机会拿满星。</string>
+    <string name="fail_text">在第 %1$d 战用完了 3 颗心。\n回去复习一下，再来挑战吧！</string>
+
+    <!-- ===== 进度与徽章 ===== -->
+    <string name="badges">成就徽章</string>
+    <string name="player_stats">Lv.%1$d %2$s　总经验 %3$d\n星星 %4$d/%5$d\n复仇怪已征服 %6$d/%7$d</string>
+    <string name="badge_owned">★ %1$s　%2$s</string>
+    <string name="badge_locked">☆ %1$s　%2$s</string>
 </resources>

@@ -46,11 +46,37 @@
                 android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <TextView
+                android:id="@+id/playerStats"
+                style="@style/PxText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/px_panel"
+                android:paddingStart="14dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="14dp" />
+
+            <TextView
+                style="@style/PxText.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/wrong_book"
-                android:textAppearance="?attr/textAppearanceTitleMedium" />
+                android:text="@string/badges" />
+
+            <LinearLayout
+                android:id="@+id/badgeList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical" />
+
+            <TextView
+                style="@style/PxText.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/wrong_book" />
 
             <TextView
                 android:id="@+id/wrongEmpty"

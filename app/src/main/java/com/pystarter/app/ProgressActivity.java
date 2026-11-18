@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.pystarter.app.data.GameStore;
 import com.pystarter.app.data.QuestionRecord;
 import com.pystarter.app.data.Store;
 import com.pystarter.app.databinding.ActivityProgressBinding;
@@ -37,6 +38,24 @@ public class ProgressActivity extends AppCompatActivity {
             binding.totalProgress.setProgress(n);
         });
         Store.streak(this, d -> binding.streakCount.setText(getString(R.string.streak_days, d)));
+
+        int xp = GameStore.xp(this);
+        int level = GameStore.levelOf(xp);
+        int[] revenge = GameStore.revengeCount(this);
+        binding.playerStats.setText(getString(R.string.player_stats, level, GameStore.titleOf(level), xp,
+                GameStore.totalStars(this), GameStore.LESSON_COUNT * 3, revenge[0], revenge[1]));
+
+        // 徽章：拿到的亮色，没拿到的灰色并显示达成条件
+        binding.badgeList.removeAllViews();
+        java.util.Set<String> owned = GameStore.badges(this);
+        for (String[] b : GameStore.BADGES) {
+            boolean has = owned.contains(b[0]);
+            TextView row = new TextView(this, null, 0, R.style.PxText);
+            row.setText(getString(has ? R.string.badge_owned : R.string.badge_locked, b[1], b[2]));
+            row.setTextColor(has ? 0xFFFFEC27 : 0xFF5F574F);
+            row.setPadding(0, 10, 0, 10);
+            binding.badgeList.addView(row);
+        }
         Store.wrongQuestions(this, list -> {
             binding.wrongList.removeAllViews();
             binding.wrongEmpty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);

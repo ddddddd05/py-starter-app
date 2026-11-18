@@ -21,10 +21,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LessonActivity" android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".LessonActivity"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".BattleActivity"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ResultActivity" android:parentActivityName=".MainActivity" />
         <activity
             android:name=".QuestionActivity"
-            android:parentActivityName=".LessonActivity"
+            android:parentActivityName=".ProgressActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ProgressActivity" android:parentActivityName=".MainActivity" />
         <activity android:name=".SettingsActivity" android:parentActivityName=".MainActivity" />
