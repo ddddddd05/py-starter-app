@@ -53,6 +53,14 @@ Python 部分 69 个离线测试，其中包括**题目内容自检**：每道�
 
 用 Android Studio 打开本目录，等 Gradle 同步完成，选择模拟器或真机运行。AI 老师需要在 App 的“设置”里填 API Key（只保存在手机上）；不填也能用内置提示。
 
+也可以不打开 Android Studio，用命令行打包（需要 JDK 17+ 和 Android SDK Platform 35）：
+
+```powershell
+.\gradlew.bat assembleDebug      # Windows；macOS / Linux 用 ./gradlew assembleDebug
+```
+
+安装包生成在 `app/build/outputs/apk/debug/app-debug.apk`。连上手机或开着模拟器时，用 `installDebug` 可以直接装上。
+
 ## 局限
 
 - 只有安卓端（iOS 原生需要 macOS 和 Xcode）；
