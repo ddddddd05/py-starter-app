@@ -71,6 +71,7 @@
     <string name="example_input_label">这段代码用到了 input()，会停下来等你输入。在下面写好要输入的内容（一行对应一次 input）：</string>
     <string name="example_input_hint">例如：你的名字</string>
     <string name="example_input_needed">这段代码会问你问题！先在黄色说明下面的输入框里写好你的回答，再点运行。</string>
+    <string name="slow_run">慢放</string>
     <string name="reset_example">恢复原样</string>
     <string name="learned_go">我学会了，去挑战！</string>
     <string name="practice_first">先做一下这道小练习吧，答错也没关系～</string>
@@ -90,6 +91,7 @@
     <string name="revenge_enemy">复仇怪 · %1$s</string>
     <string name="revenge_intro">以前打败过你的 %1$s 回来了！这次一定能赢。（打输不扣血）</string>
     <string name="revenge_win">%1$s 被彻底征服了！</string>
+    <string name="battle_resume">战斗继续！刚才的进度都还在。</string>
     <string name="open_notes">翻笔记</string>
     <string name="ask_fairy">问小精灵</string>
     <string name="ask_fairy_more">再给点提示</string>

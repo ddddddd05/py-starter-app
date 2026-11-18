@@ -29,6 +29,7 @@
             android:name=".BattleActivity"
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".debug.StepDebugActivity" />
         <activity android:name=".ResultActivity" android:parentActivityName=".MainActivity" />
         <activity
             android:name=".QuestionActivity"

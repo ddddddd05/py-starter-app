@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.pystarter.app.data.GameStore;
 import com.pystarter.app.databinding.ActivityLessonBinding;
+import com.pystarter.app.debug.StepDebugActivity;
 import com.pystarter.app.game.Fx;
 import com.pystarter.app.game.Sprites;
 
@@ -48,6 +49,15 @@ public class LessonActivity extends AppCompatActivity {
         binding.prev.setOnClickListener(v -> show(step - 1));
         binding.next.setOnClickListener(v -> onNext());
         binding.runExample.setOnClickListener(v -> runExample());
+        binding.slowExample.setOnClickListener(v -> {
+            String code = binding.exampleEditor.getText().toString();
+            if (code.contains("input(") && binding.exampleInput.getText().toString().trim().isEmpty()) {
+                Fx.shake(binding.inputBox);
+                binding.speech.setText(R.string.example_input_needed);
+                return;
+            }
+            StepDebugActivity.start(this, code, exampleInputs());
+        });
         binding.resetExample.setOnClickListener(v -> {
             binding.exampleEditor.setText(info.optString("example"));
             binding.exampleOutput.setVisibility(View.GONE);

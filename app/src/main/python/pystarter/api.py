@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from functools import wraps
 
-from . import checker, game, lessons, runner, tutor
+from . import checker, game, lessons, runner, tracer, tutor
 
 
 def _json_api(fn):
@@ -41,6 +41,12 @@ def get_lesson(lesson_id):
 @_json_api
 def run_code(code, inputs_json="[]"):
     return runner.run(str(code), json.loads(inputs_json or "[]"))
+
+
+@_json_api
+def trace_code(code, inputs_json="[]"):
+    """单步慢放：逐行执行，返回每一步的行号、变量和输出。"""
+    return tracer.trace(str(code), json.loads(inputs_json or "[]"))
 
 
 @_json_api
