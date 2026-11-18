@@ -211,6 +211,21 @@ public final class GameStore {
         return lessonId == 1 || previousLessonStars > 0;
     }
 
+    // ---------- 技能书：自己用 def 定义过的函数 ----------
+
+    private static final String KEY_SKILLS = "skills";
+
+    public static void addSkill(Context ctx, String name) {
+        Set<String> set = new HashSet<>(prefs(ctx).getStringSet(KEY_SKILLS, new HashSet<>()));
+        if (set.add(name)) {
+            prefs(ctx).edit().putStringSet(KEY_SKILLS, set).apply();
+        }
+    }
+
+    public static Set<String> skills(Context ctx) {
+        return prefs(ctx).getStringSet(KEY_SKILLS, new HashSet<>());
+    }
+
     /** 复仇怪打赢的额外经验。 */
     public static void addXp(Context ctx, int amount) {
         prefs(ctx).edit().putInt(KEY_XP, xp(ctx) + amount).apply();

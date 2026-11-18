@@ -45,6 +45,10 @@ public class ProgressActivity extends AppCompatActivity {
         binding.playerStats.setText(getString(R.string.player_stats, level, GameStore.titleOf(level), xp,
                 GameStore.totalStars(this), GameStore.LESSON_COUNT * 3, revenge[0], revenge[1]));
 
+        java.util.Set<String> skills = GameStore.skills(this);
+        binding.playerStats.append("\n" + (skills.isEmpty() ? getString(R.string.skill_book_empty)
+                : getString(R.string.skill_book, String.join("、", new java.util.TreeSet<>(skills)))));
+
         // 徽章：拿到的亮色，没拿到的灰色并显示达成条件
         binding.badgeList.removeAllViews();
         java.util.Set<String> owned = GameStore.badges(this);

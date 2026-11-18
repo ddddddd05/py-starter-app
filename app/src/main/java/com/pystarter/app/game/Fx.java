@@ -79,8 +79,13 @@ public final class Fx {
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         parent.addView(t, lp);
-        t.setX(anchor.getX() + anchor.getWidth() / 2f - 40);
-        t.setY(anchor.getY());
+        // anchor 可能嵌在好几层布局里：用窗口坐标换算成相对 parent 的位置，飘字才会出现在它头上
+        int[] a = new int[2];
+        int[] p = new int[2];
+        anchor.getLocationInWindow(a);
+        parent.getLocationInWindow(p);
+        t.setX(a[0] - p[0] + anchor.getWidth() / 2f - 40);
+        t.setY(a[1] - p[1]);
         t.animate().translationYBy(-120).alpha(0f).setDuration(1000)
                 .withEndAction(() -> parent.removeView(t)).start();
     }

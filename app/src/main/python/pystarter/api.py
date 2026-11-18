@@ -53,7 +53,7 @@ def trace_code(code, inputs_json="[]"):
 def check(lesson_id, index, answer):
     """判题结果额外带上 events / tag / npc，给闯关战斗用；原来的字段不变。"""
     lid, idx = int(lesson_id), int(index)
-    return game.decorate(lid, idx, checker.check(lid, idx, answer))
+    return game.decorate(lid, idx, checker.check(lid, idx, answer), answer)
 
 
 @_json_api

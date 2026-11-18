@@ -5,8 +5,10 @@
 """
 from __future__ import annotations
 
+import ast
 import re
 
+from . import tracer
 from .lessons import LESSONS, get_lesson
 
 # ---------- 章节：每 4 关一章，每章最后一关是章节 Boss ----------
@@ -140,14 +142,84 @@ def error_tag(lesson_id: int, index: int, result: dict) -> str:
     return "output"
 
 
-def decorate(lesson_id: int, index: int, result: dict) -> dict:
-    """给判题结果加上游戏层需要的字段：events（驱动动画）、tag（错因）、npc（台词）。
+MAX_COMBO = 8          # 连击动画最多播几刀，循环再多也只播这么多
+
+
+def _code_lines(code: str) -> int:
+    """有效代码行数：不算空行和注释。"""
+    return sum(1 for line in code.splitlines() if line.strip() and not line.strip().startswith("#"))
+
+
+def _branch_taken(code: str, executed: set[int]) -> dict | None:
+    """看第一个 if 实际走了哪条路：if / elif / else。用单步跟踪记录下的“执行过的行”来判断。"""
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return None
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.If) or node.lineno not in executed:
+            continue
+        cond = ast.unparse(node.test)
+        if any(n.lineno in executed for n in node.body):
+            return {"path": "if", "condition": cond, "result": True}
+        orelse = node.orelse
+        if len(orelse) == 1 and isinstance(orelse[0], ast.If):          # elif
+            sub = orelse[0]
+            if any(n.lineno in executed for n in sub.body):
+                return {"path": "elif", "condition": ast.unparse(sub.test), "result": True}
+        return {"path": "else", "condition": cond, "result": False}
+    return None
+
+
+def integrated_events(lesson_id: int, index: int, answer: str) -> tuple[list[dict], dict | None]:
+    """融入式玩法：答对写代码题后，按代码的真实执行过程生成专属动画事件。
+
+    - 循环：跑了几轮就连击几刀（combo）
+    - 判断：实际走了哪条分支（branch）
+    - 函数：自己定义的函数名变成技能（skill）
+    另外返回 MP（简洁度）：和参考写法比较有效行数。
+    """
+    q = get_lesson(lesson_id)["questions"][index]
+    if q["type"] != "code":
+        return [], None
+    code = str(answer)
+    traced = tracer.trace(code, q.get("inputs"))
+    steps = traced["steps"]
+    events: list[dict] = []
+
+    rounds = max((s["loop"] or 0) for s in steps) if steps else 0
+    if rounds > 1:
+        events.append({"action": "combo", "times": min(rounds, MAX_COMBO), "rounds": rounds})
+
+    executed = {s["line"] for s in steps if s["line"]}
+    branch = _branch_taken(code, executed)
+    if branch:
+        events.append({"action": "branch", **branch})
+
+    try:
+        names = [n.name for n in ast.walk(ast.parse(code)) if isinstance(n, ast.FunctionDef)]
+    except SyntaxError:
+        names = []
+    for name in names:
+        events.append({"action": "skill", "name": name})
+
+    used, par = _code_lines(code), _code_lines(q["reference"])
+    mp = {"used": used, "par": par, "bonus": used <= par, "tip": None}
+    if used > par + 1:
+        mp["tip"] = "能更短吗？试试用循环或函数，少写几行也能做到。"
+    return events, mp
+
+
+def decorate(lesson_id: int, index: int, result: dict, answer=None) -> dict:
+    """给判题结果加上游戏层需要的字段：events（驱动动画）、tag（错因）、npc（台词）、mp（简洁度）。
     原来的 feedback（大白话说明 + 行号）保持不变，NPC 台词只是额外加在上面。"""
     out = dict(result)
     if result.get("correct"):
-        out["events"] = [{"action": "attack", "target": "enemy", "times": 1}]
+        extra, mp = integrated_events(lesson_id, index, answer) if answer is not None else ([], None)
+        out["events"] = [{"action": "attack", "target": "enemy", "times": 1}] + extra
+        out["mp"] = mp
         out["tag"] = None
-        out["npc"] = "漂亮！这一击正中要害！"
+        out["npc"] = _win_line(extra)
     else:
         tag = error_tag(lesson_id, index, result)
         out["events"] = [{"action": "miss"}, {"action": "hurt", "target": "hero", "amount": 1}]
@@ -155,6 +227,22 @@ def decorate(lesson_id: int, index: int, result: dict) -> dict:
         out["tag_name"] = ERROR_TAGS[tag][0]
         out["npc"] = ERROR_TAGS[tag][1]
     return out
+
+
+def _win_line(events: list[dict]) -> str:
+    """答对时的台词：有融入式事件就说具体发生了什么。"""
+    for e in events:
+        if e["action"] == "skill":
+            return f"你创造了新技能【{e['name']}】！技能发动！"
+    for e in events:
+        if e["action"] == "combo":
+            return f"循环跑了 {e['rounds']} 轮——{e['times']} 连击！"
+    for e in events:
+        if e["action"] == "branch":
+            if e["path"] == "else":
+                return f"岔路口：{e['condition']} 不成立，走了 else 这条路，打中了！"
+            return f"岔路口：{e['condition']} 成立，走了 {e['path']} 这条路，打中了！"
+    return "漂亮！这一击正中要害！"
 
 
 def level_info(lesson_id: int) -> dict:

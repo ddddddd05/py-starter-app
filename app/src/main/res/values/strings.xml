@@ -92,6 +92,10 @@
     <string name="revenge_intro">以前打败过你的 %1$s 回来了！这次一定能赢。（打输不扣血）</string>
     <string name="revenge_win">%1$s 被彻底征服了！</string>
     <string name="battle_resume">战斗继续！刚才的进度都还在。</string>
+    <string name="branch_float">走 %1$s 路！</string>
+    <string name="skill_float">技能【%1$s】发动！</string>
+    <string name="mp_bonus">MP 简洁加成 +5：你用了 %1$d 行，参考写法 %2$d 行。</string>
+    <string name="mp_long">MP：你用了 %1$d 行，参考写法只要 %2$d 行。</string>
     <string name="open_notes">翻笔记</string>
     <string name="ask_fairy">问小精灵</string>
     <string name="ask_fairy_more">再给点提示</string>
@@ -133,6 +137,8 @@
 
     <!-- ===== 进度与徽章 ===== -->
     <string name="badges">成就徽章</string>
+    <string name="skill_book">技能书（自己用 def 创造的技能）：%1$s</string>
+    <string name="skill_book_empty">技能书：还没有技能。第 11 关学会 def 后，自己定义的函数会变成技能。</string>
     <string name="player_stats">Lv.%1$d %2$s　总经验 %3$d\n星星 %4$d/%5$d\n复仇怪已征服 %6$d/%7$d</string>
     <string name="badge_owned">★ %1$s　%2$s</string>
     <string name="badge_locked">☆ %1$s　%2$s</string>

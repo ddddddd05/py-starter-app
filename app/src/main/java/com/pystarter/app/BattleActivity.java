@@ -287,18 +287,22 @@ public class BattleActivity extends AppCompatActivity {
             }
         }
         st.battlesWon++;
-        playEvents(r.optJSONArray("events"));
-        binding.enemyHp.setProgress(0);
-        binding.enemy.postDelayed(() -> Fx.defeat(binding.enemy), 350);
+        long animMs = playEvents(r.optJSONArray("events"));     // 连击等融入式动画播完再倒下
+        binding.enemy.postDelayed(() -> {
+            binding.enemyHp.setProgress(0);
+            Fx.defeat(binding.enemy);
+        }, Math.max(350, animMs));
         int xp = st.stage == REVENGE_STAGE ? 15 : 10;
         Fx.floatText(binding.root, binding.arena, "+" + xp + " XP", 0xFFFFEC27);
+        String mpText = applyMp(r.optJSONObject("mp"));
         if (st.stage == REVENGE_STAGE) {
             GameStore.conquerRevenge(this, st.qLesson, st.qIndex);
             GameStore.addXp(this, xp);
             st.revengeName = st.revenge.optString("name");
-            say(getString(R.string.npc_fairy), getString(R.string.revenge_win, st.revengeName), r.optString("feedback"));
+            say(getString(R.string.npc_fairy), getString(R.string.revenge_win, st.revengeName),
+                    join(r.optString("feedback"), mpText));
         } else {
-            say(getString(R.string.npc_fairy), r.optString("npc"), r.optString("feedback"));
+            say(getString(R.string.npc_fairy), r.optString("npc"), join(r.optString("feedback"), mpText));
         }
         binding.helpRow.setVisibility(View.GONE);
         binding.attack.setVisibility(View.GONE);
@@ -337,23 +341,94 @@ public class BattleActivity extends AppCompatActivity {
         }
     }
 
-    /** 根据判题结果里的 events 播放动画（第 2 步做融入式关卡时，在这里加专属动画）。 */
-    private void playEvents(JSONArray events) {
+    /**
+     * 根据判题结果里的 events 播放动画，返回动画总时长（毫秒）。
+     * events 由 Python 按代码的真实执行过程生成：
+     *   attack 普通一击；hurt 主角受伤；
+     *   combo 循环跑了几轮就连击几刀（融入式：for / while）；
+     *   branch 实际走了 if 还是 else（融入式：判断）；
+     *   skill 自己定义的函数变成技能（融入式：def）。
+     */
+    private long playEvents(JSONArray events) {
+        long t = 0;
         for (int i = 0; events != null && i < events.length(); i++) {
             JSONObject e = events.optJSONObject(i);
             switch (e.optString("action")) {
                 case "attack":
                     Fx.lunge(binding.hero, 60);
                     binding.enemy.postDelayed(() -> Fx.hit(binding.enemy), 200);
+                    t = Math.max(t, 420);
                     break;
                 case "hurt":
                     Fx.lunge(binding.enemy, -60);
                     binding.hero.postDelayed(() -> Fx.hit(binding.hero), 200);
                     break;
+                case "combo": {
+                    int times = e.optInt("times", 1);
+                    long start = 450;
+                    for (int k = 0; k < times; k++) {
+                        int hit = k + 1;
+                        binding.hero.postDelayed(() -> {
+                            Fx.lunge(binding.hero, 60);
+                            Fx.hit(binding.enemy);
+                            binding.enemyHp.setProgress(Math.max(0, 100 - hit * 100 / times));
+                            Fx.floatText(binding.root, binding.enemy, hit + " 连击", 0xFFFF77A8);
+                        }, start + k * 330L);
+                    }
+                    t = Math.max(t, start + times * 330L + 200);
+                    break;
+                }
+                case "branch": {
+                    String path = e.optString("path");
+                    binding.hero.postDelayed(() -> {
+                        Fx.floatText(binding.root, binding.hero,
+                                getString(R.string.branch_float, path), 0xFF29ADFF);
+                        binding.hero.animate().translationYBy(-40).setDuration(150)
+                                .withEndAction(() -> binding.hero.animate().translationYBy(40).setDuration(150).start())
+                                .start();
+                    }, 450);
+                    t = Math.max(t, 900);
+                    break;
+                }
+                case "skill": {
+                    String name = e.optString("name");
+                    GameStore.addSkill(this, name);
+                    binding.hero.postDelayed(() -> {
+                        Fx.floatText(binding.root, binding.arena, getString(R.string.skill_float, name), 0xFF00E436);
+                        Fx.hit(binding.enemy);
+                        Fx.hit(binding.enemy);
+                    }, 500);
+                    t = Math.max(t, 1000);
+                    break;
+                }
                 default:
                     break;
             }
         }
+        return t;
+    }
+
+    /** MP（简洁度）：写得和参考写法一样简洁就加 5 经验；太啰嗦就给一句提示。返回要显示的说明。 */
+    private String applyMp(JSONObject mp) {
+        if (mp == null) {
+            return null;
+        }
+        int used = mp.optInt("used");
+        int par = mp.optInt("par");
+        if (mp.optBoolean("bonus")) {
+            GameStore.addXp(this, 5);
+            binding.root.postDelayed(() -> Fx.floatText(binding.root, binding.hero, "+5 MP", 0xFF29ADFF), 600);
+            return getString(R.string.mp_bonus, used, par);
+        }
+        String tip = mp.optString("tip");
+        return getString(R.string.mp_long, used, par) + (tip.isEmpty() ? "" : "\n" + tip);
+    }
+
+    private static String join(String a, String b) {
+        if (b == null || b.isEmpty()) {
+            return a;
+        }
+        return a == null || a.isEmpty() ? b : a + "\n" + b;
     }
 
     private boolean isLastStage() {
