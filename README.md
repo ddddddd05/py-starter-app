@@ -1,14 +1,33 @@
-# Python 起步：给零基础的人入门 Python 的安卓 App
+# Python 起步：像素闯关学 Python 的安卓 App
 
-一个安卓原生 App：12 个关卡带完全没学过编程的人入门 Python。每关先用大白话 + 比喻讲概念，再做 3 道题（选择、填空、自己写代码）。写的代码**在手机上真实运行**，做错了可以问 **AI 老师**：只给提示、不给答案。
+一个安卓原生 App：用**像素风闯关游戏**带完全没学过编程的人入门 Python。12 关分 3 章，每关**先学后闯**：小法师用卡片和比喻讲概念、可以动手改代码运行，学会了再去打小怪、精英和 Boss。写的代码**在手机上真实运行**，做错了可以问小精灵（AI 老师）：只给提示、不给答案。
 
-> 开发方式：用 Claude Code 辅助开发（vibe coding），本人负责需求、交互设计、题目设计、验收和测试。
+<p align="center">
+  <img src="docs/demo.gif" width="270" alt="演示：闯关地图 → 学习（输入名字运行 input 示例）→ 挑战三战 → Boss 先错后对 → 复仇怪 → 结算升级">
+</p>
+
+<p align="center">模拟器录屏（3 倍速）。完整视频：<a href="docs/demo.mp4">docs/demo.mp4</a></p>
+
+> 开发方式：用 Claude Code 辅助开发（vibe coding），本人负责需求、玩法和交互设计、题目设计、验收和测试。玩法上的取舍和测试中发现的问题见 [docs/开发记录.md](docs/开发记录.md)。
+>
+> 安装包：在 [Releases](../../releases) 下载 APK，安卓手机直接安装即可，不需要后端，断网也能玩。
+
+## 玩法
+
+| 环节 | 说明 |
+|---|---|
+| 闯关地图 | 12 关分 3 章（新手村 → 迷雾森林 → 代码城堡），每章最后一关是章节 Boss；过一关才解锁下一关 |
+| 先学习（不扣血） | 概念拆成小卡片 → 比喻 → 动手试一试（示例代码可改着运行，用到 `input()` 时可以自己输入）→ 1 道小练习 |
+| 再挑战 | 小怪（选择题）→ 精英（填空题）→ Boss（写代码题）；每关 3 颗心，答错扣 1 颗，扣完重来；写代码可以随便“试运行”，只有“出招”错了才扣血 |
+| 错因 + 台词 | 答错时小精灵用游戏台词说明错因（如“引号怪”“括号怪”），下面保留带行号的大白话报错，学得到真正的知识点 |
+| 复仇怪 | 答错过的题会带着错因标签，在后面的关卡里作为“复仇怪”回来，打赢就算征服（间隔复习） |
+| 星级 / 经验 / 徽章 | 没错、没看提示 3 星；看提示或翻笔记不扣血但影响星级；经验升级换称号；8 个成就徽章 |
 
 ## 功能
 
 | 功能 | 说明 | 技术 |
 |---|---|---|
-| 学习路线 | 12 关，从 `print` 到函数，显示每关进度和连续学习天数 | RecyclerView、Material 3 |
+| 像素风界面 | 角色和怪物用字符画在代码里绘制，不用图片素材；方块按钮、硬阴影、受击 / 攻击动画 | 自定义 View、属性动画 |
 | 讲解 + 示例 | 大白话、比喻、可运行的示例代码 | — |
 | 三种题型 | 选择、填空、自己写代码 | — |
 | 手机上运行 Python | 学生写的代码在 App 内嵌的 Python 解释器里执行，死循环自动停止，危险操作被拦截，报错翻译成大白话并标出第几行 | Chaquopy |
@@ -23,20 +42,25 @@
 app/src/main/java/com/pystarter/app/     安卓原生部分（Java）
   PyStarterApp.java      启动内嵌 Python、通知渠道、安排提醒
   PyBridge.java          Java 调 Python：后台线程执行，结果回到主线程
-  MainActivity.java      学习路线（关卡列表）
-  LessonActivity.java    关卡讲解 + 题目入口
-  QuestionActivity.java  做题、运行、提交、问 AI 老师
-  ProgressActivity.java  进度和错题本
+  MainActivity.java      闯关地图（章节、解锁、星级、等级经验）
+  LessonActivity.java    学习：概念卡片、比喻、动手试一试、小练习
+  BattleActivity.java    挑战：三场战斗、生命值、提示、翻笔记、复仇怪
+  ResultActivity.java    结算：星级、经验明细、升级、新徽章
+  QuestionActivity.java  错题本里单独重做一道题
+  ProgressActivity.java  进度、徽章和错题本
   SettingsActivity.java  API Key、提醒开关
   ReminderWorker.java    每日提醒
-  data/                  Room 数据库（做题记录、打卡）
+  game/                  像素角色（字符画）、动画
+  data/                  Room 数据库（做题记录、打卡）+ GameStore（解锁、星级、经验、徽章、复仇怪）
 app/src/main/python/pystarter/           核心逻辑（Python）
   lessons.py             12 关内容和题目
+  game.py                闯关层：章节、学习卡片、小练习、怪物、错因标签和 NPC 台词
   runner.py              安全运行学生代码、翻译报错
   checker.py             判题
   tutor.py               AI 老师（三级提示 + 防泄露答案）
-  api.py                 给 Java 调用的接口（统一返回 JSON）
+  api.py                 给 Java 调用的接口（统一返回 JSON，判题结果带 events 字段驱动动画）
 tests/test_core.py       Python 核心逻辑的离线测试
+tests/test_game.py       闯关层的测试（小练习答案真实运行校验、错因标签等）
 ```
 
 **为什么用 Java + Python**：界面和手机能力（通知、数据库、后台任务）用安卓原生的 Java；因为要在手机上真实运行学生写的 Python，所以用 Chaquopy 把 Python 解释器打包进 App，判题和 AI 老师的逻辑也用 Python 写。
@@ -47,7 +71,7 @@ tests/test_core.py       Python 核心逻辑的离线测试
 python -m pytest -q
 ```
 
-Python 部分 69 个离线测试，其中包括**题目内容自检**：每道“写代码”题的参考答案必须能通过自己的判题；每道选择题都真的运行代码，正确选项必须和真实输出一致；每个填空答案放回模板后代码必须能运行。
+Python 部分 117 个离线测试，其中包括**题目内容自检**：每道“写代码”题的参考答案必须能通过自己的判题；每道选择题都真的运行代码，正确选项必须和真实输出一致；每个填空答案放回模板后代码必须能运行。
 
 ## 运行
 
@@ -60,6 +84,25 @@ Python 部分 69 个离线测试，其中包括**题目内容自检**：每道�
 ```
 
 安装包生成在 `app/build/outputs/apk/debug/app-debug.apk`。连上手机或开着模拟器时，用 `installDebug` 可以直接装上。
+
+### 复现环境
+
+| 需要 | 版本 | 说明 |
+|---|---|---|
+| JDK | 17 及以上（已用 21 验证） | Android Studio 自带的也可以 |
+| Android SDK | Platform 35 | Build-Tools 34 第一次打包时会自动安装；SDK 路径写在 `local.properties` 的 `sdk.dir`，或设置环境变量 `ANDROID_HOME` |
+| Python | 3.10 及以上 + `pytest` | 只用于在电脑上跑测试；App 里内嵌的是 Chaquopy 自带的 Python 3.12，不依赖电脑上的 Python |
+| 网络 | 第一次打包需要 | 会下载 Gradle（腾讯云镜像）、依赖（阿里云镜像）和 Chaquopy 的 Python 运行环境，之后有缓存 |
+
+已验证：只用仓库里的文件（不带任何本地缓存）放到新文件夹，跑测试全部通过，`assembleDebug` 能打出安装包。
+
+**Windows 用户名是中文时**：打包可能报 `Unable to establish loopback connection`。这是 Java 在临时目录路径含中文时的已知问题，把临时目录换成纯英文路径即可：
+
+```powershell
+$env:TEMP = "C:\gradle-tmp"; $env:TMP = $env:TEMP
+$env:JAVA_TOOL_OPTIONS = "-Djava.io.tmpdir=C:\gradle-tmp -Djdk.net.unixdomain.tmpdir=C:\gradle-tmp"
+.\gradlew.bat assembleDebug
+```
 
 ## 局限
 

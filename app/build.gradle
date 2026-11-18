@@ -11,8 +11,8 @@ android {
         applicationId 'com.pystarter.app'
         minSdk 24                 // Android 7.0 及以上
         targetSdk 35
-        versionCode 1
-        versionName '1.0'
+        versionCode 2
+        versionName '1.1'
 
         // Chaquopy 需要指定打包哪些 CPU 架构：真机多为 arm64，电脑上的模拟器是 x86_64
         ndk {

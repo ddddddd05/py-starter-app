@@ -11,3 +11,6 @@ captures/
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# 录屏原始素材（只上传剪好的 docs/demo.mp4 和 docs/demo.gif）
+docs/raw/
