@@ -1,39 +1,23 @@
 package com.pystarter.leaderboard.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
-@Entity
-@Table(
-    name = "leaderboard_entry",
-    indexes = {
-        @Index(name = "idx_rank_sort", columnList = "stars DESC, xp DESC, updated_at ASC")
-    }
-)
+@TableName("leaderboard_entry")
 public class LeaderboardEntry {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
-
-    @Column(name = "player_id", nullable = false, unique = true, length = 64)
     private String playerId;
-
-    @Column(nullable = false, length = 24)
     private String nickname;
-
-    @Column(nullable = false)
     private int stars;
-
-    @Column(nullable = false)
     private int xp;
-
-    @Column(nullable = false)
     private int level;
-
-    @Column(name = "updated_at", nullable = false)
     private long updatedAt;
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getPlayerId() { return playerId; }
     public void setPlayerId(String playerId) { this.playerId = playerId; }
     public String getNickname() { return nickname; }

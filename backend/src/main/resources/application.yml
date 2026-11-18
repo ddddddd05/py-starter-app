@@ -3,16 +3,20 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:file:./data/leaderboard;AUTO_SERVER=TRUE
+    url: jdbc:h2:file:./data/leaderboard;MODE=MySQL;AUTO_SERVER=TRUE
     driver-class-name: org.h2.Driver
     username: sa
     password:
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-h2.sql
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 pystarter:
   leaderboard:
-    # 客户端与服务端约定的防篡改校验盐（演示用途；生产环境放环境变量）
     sign-secret: "PyStarter-2026-Secret"

@@ -190,6 +190,7 @@ public class BattleActivity extends AppCompatActivity {
         binding.fillTemplate.setVisibility(View.GONE);
         binding.fillInput.setVisibility(View.GONE);
         binding.codeEditor.setVisibility(View.GONE);
+        CodeToolbar.setVisible(binding.codeEditor, false);
         binding.output.setVisibility(View.GONE);
         binding.run.setVisibility(View.GONE);
         binding.slow.setVisibility(View.GONE);

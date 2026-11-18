@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
             binding.loading.setVisibility(View.GONE);
             mapInfo = info;
             buildMap();
-            maybeShowIntro();
         }, "map_info");
         askNotificationPermission();
     }
@@ -115,6 +114,36 @@ public class MainActivity extends AppCompatActivity {
         }
         int current = GameStore.currentLesson(this);
         int count = 0;
+
+        // 首次打开时的非阻塞式像素剧情引导卡片（不遮挡地图与 UI 测试）
+        if (!GameStore.isIntroSeen(this)) {
+            LinearLayout introCard = new LinearLayout(this);
+            introCard.setOrientation(LinearLayout.HORIZONTAL);
+            introCard.setGravity(Gravity.CENTER_VERTICAL);
+            introCard.setBackgroundResource(R.drawable.px_dialog);
+            introCard.setPadding(dp(12), dp(8), dp(12), dp(8));
+            LinearLayout.LayoutParams icp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            icp.topMargin = dp(8);
+
+            TextView story = new TextView(this, null, 0, R.style.PxText_Small);
+            story.setText("小法师：代码王国被 Bug 怪占领了！先学概念再去打怪，或点「试炼迷宫」写代码走格子！");
+            story.setTextColor(0xFFFFF1E8);
+            introCard.addView(story, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+            TextView closeIntro = new TextView(this, null, 0, R.style.PxText_Small);
+            closeIntro.setText("知道了");
+            closeIntro.setTextColor(0xFF000000);
+            closeIntro.setBackgroundResource(R.drawable.px_btn_yellow);
+            closeIntro.setPadding(dp(8), dp(4), dp(8), dp(4));
+            closeIntro.setOnClickListener(v -> {
+                SoundFx.star(this);
+                GameStore.markIntroSeen(this);
+                introCard.setVisibility(View.GONE);
+            });
+            introCard.addView(closeIntro);
+            box.addView(introCard, icp);
+        }
 
         // 顶部快捷条：试炼迷宫卡片 + 演示模式开关
         LinearLayout topCard = new LinearLayout(this);
@@ -314,23 +343,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, BattleActivity.class);
         intent.putExtra(BattleActivity.EXTRA_LESSON_ID, id);
         startActivity(intent);
-    }
-
-    /** 首次打开时的像素剧情开场：交代世界观并可一键跳过。 */
-    private void maybeShowIntro() {
-        if (GameStore.isIntroSeen(this)) {
-            return;
-        }
-        GameStore.markIntroSeen(this);
-        new AlertDialog.Builder(this)
-                .setTitle("✨ 欢迎来到代码王国")
-                .setMessage("小法师：不好了！代码王国被 Bug 怪占领了！\n\n"
-                        + "• 先学习概念、动手改代码，再去挑战 Bug 怪；\n"
-                        + "• 还可以随时点击「试炼迷宫」，写代码亲自指挥小骑士走格子！\n\n"
-                        + "（提示：右上角“演示解锁”可一键体验全部关卡）")
-                .setPositiveButton("开始冒险！", (d, w) -> SoundFx.star(this))
-                .setNegativeButton("跳过", null)
-                .show();
     }
 
     /** Android 13 起发通知要用户同意；只在第一次打开时问一次。 */

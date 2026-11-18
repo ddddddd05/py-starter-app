@@ -4,12 +4,15 @@
 
 ---
 
-## 一、Spring Boot + MySQL 在线排行榜后端（`backend/`）
+## 一、Spring Boot + MyBatis-Plus + Spring Cache + AOP 在线排行榜后端（`backend/`）
 
-### 1. 三层架构是怎么分的？
-- **Controller 层**（`LeaderboardController.java`）：负责接 HTTP 请求、用 `@Valid` 做参数校验（比如 `stars` 必须在 `0~36`），再把结果转成 JSON 返回。**不写业务逻辑。**
-- **Service 层**（`LeaderboardService.java`）：核心业务与事务边界（`@Transactional`）。做两件事：① 校验防作弊签名；② 查询旧记录，只保留更高的星数和经验，再保存。
-- **Repository 层**（`LeaderboardRepository.java`）：继承 Spring Data JPA 的 `JpaRepository`，只需要写方法名 `findTop50ByOrderByStarsDescXpDescUpdatedAtAsc()`，框架自动生成 SQL。
+### 1. 三层架构与技术框架分工
+- **Controller 层**（`LeaderboardController.java`）：接收 HTTP 请求，用 `@Valid` 做参数校验，并用 **SpringDoc OpenAPI（Swagger 3）** 注解（`@Tag`、`@Operation`）自动生成 `/swagger-ui.html` 在线接口文档。
+- **AOP 切面层**（`ApiLogAspect.java`）：基于 **Spring AOP**（`@Aspect` + `@Around`）统一拦截 Controller 方法，自动统计每个接口的耗时（ms）和异常日志，不用在业务代码里写重复日志。
+- **Service + Cache 层**（`LeaderboardService.java`）：核心业务与事务边界（`@Transactional`），同时使用 **Spring Cache + Caffeine**：
+  - 查询 Top 50 加 `@Cacheable("leaderboard")`，读多写少直接命中内存缓存；
+  - 上传新成绩加 `@CacheEvict(allEntries = true)`，在更新数据库后自动淘汰缓存，保证缓存与数据库一致。
+- **Mapper 层**（`LeaderboardMapper.java`）：使用 **MyBatis-Plus** 继承 `BaseMapper`，配合 `LambdaQueryWrapper`（编译期字段安全、底层 `#{} ` 预编译防 SQL 注入）和 `PaginationInnerInterceptor` 分页插件实现 Top 50 排序查询。
 
 ### 2. 面试常问：MySQL 建表和索引怎么设计的？
 看 `backend/src/main/resources/schema.sql`：
@@ -17,10 +20,10 @@
 - `KEY idx_rank_sort (stars DESC, xp DESC, updated_at ASC)`：联合索引直接覆盖排行榜的 `ORDER BY`，查询前 50 名时避免全表排序（`Using filesort`）。
 
 ### 3. 面试常问：怎么防止别人抓包伪造分数？
-在项目里用了**三道防线**：
-1. **参数边界校验**（DTO `@Min`/`@Max`）：总星数最多 36、经验不能为负，超限直接被 `@Valid` + `@RestControllerAdvice` 拦截返回 400。
-2. **SHA-256 请求签名校验**：客户端上传前用 `SHA-256(playerId + ":" + stars + ":" + xp + ":" + secret)` 生成 `signature`，服务端用 `MessageDigest.isEqual`（防时序攻击）比对，抓包直接改分数会因签名不匹配被 403 拒绝。
-3. **只升不降保护**：Service 层用 `Math.max(旧值, 新值)`，防止异常请求回退覆盖玩家已有成绩。
+在项目里做了两层基础校验，同时要**诚实认知客户端签名的局限性**：
+1. **参数边界校验**（DTO `@Min`/`@Max`）：总星数最多 36、经验有上限、不能为负，超限直接被 `@Valid` + `@RestControllerAdvice` 拦截返回 400。
+2. **基础请求签名 + 只升不降保护**：客户端上传带 SHA-256 签名，拦截最简单的明文抓包改参；Service 层只在星数/经验真正提升时才更新 `updatedAt`，防止重复上传刷新时间戳导致同分排名下降。
+3. **面试加分回答（局限与演进）**：“因为客户端签名密钥写在 APK 里，反编译仍可拿到，所以它只能防入门级抓包，**不是真正的防作弊**。生产环境真正的方案是把判题和经验发放放到服务端，或者由服务端下发一次性提交凭证（Nonce）+ HTTPS + 登录态 Token。”
 
 ### 4. 面试常问：服务端没启动时 App 会崩溃吗？
 不会。安卓端 `LeaderboardClient.java` 使用 **OkHttp**（带 4 秒连接超时、6 秒读超时）在独立后台线程请求，捕获 `IOException` 后通过 `Handler(Looper.getMainLooper())` 切回主线程提示“离线模式照常可用”，App 其他全部学习、闯关和迷宫功能完全不受影响。

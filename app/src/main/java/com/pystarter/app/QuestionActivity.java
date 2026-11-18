@@ -72,6 +72,7 @@ public class QuestionActivity extends AppCompatActivity {
         binding.choiceGroup.setVisibility(View.GONE);
         binding.fillBox.setVisibility(View.GONE);
         binding.codeEditor.setVisibility(View.GONE);
+        CodeToolbar.setVisible(binding.codeEditor, false);
         binding.run.setVisibility(View.GONE);
 
         switch (type) {
@@ -92,6 +93,7 @@ public class QuestionActivity extends AppCompatActivity {
                 break;
             default:
                 binding.codeEditor.setVisibility(View.VISIBLE);
+                CodeToolbar.setVisible(binding.codeEditor, true);
                 binding.run.setVisibility(View.VISIBLE);
                 binding.codeEditor.setText(question.optString("starter"));
                 break;

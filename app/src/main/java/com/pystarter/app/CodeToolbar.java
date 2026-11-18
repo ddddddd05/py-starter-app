@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -12,10 +13,14 @@ import android.widget.TextView;
 
 import com.pystarter.app.game.SoundFx;
 
+import java.util.WeakHashMap;
+
 /**
  * 手机端代码快捷符号栏：解决手机输入法切英文、打缩进/冒号/引号/括号麻烦的问题。
  */
 public final class CodeToolbar {
+
+    private static final WeakHashMap<EditText, View> TOOLBARS = new WeakHashMap<>();
 
     private static final String[][] KEYS = {
             {"缩进", "    ", "4"},
@@ -75,6 +80,15 @@ public final class CodeToolbar {
         }
         scroll.addView(row);
         parent.addView(scroll, idx);
+        TOOLBARS.put(codeInput, scroll);
+    }
+
+    /** 控制快捷符号栏随代码编辑框一起显示或隐藏（避免在选择题/填空题里露出）。 */
+    public static void setVisible(EditText codeInput, boolean visible) {
+        View bar = TOOLBARS.get(codeInput);
+        if (bar != null) {
+            bar.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     private static void insertAtCursor(EditText et, String text, int cursorOffset) {

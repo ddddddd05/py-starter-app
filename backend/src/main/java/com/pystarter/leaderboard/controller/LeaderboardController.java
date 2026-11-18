@@ -4,12 +4,15 @@ import com.pystarter.leaderboard.dto.RankItemDto;
 import com.pystarter.leaderboard.dto.SubmitScoreRequest;
 import com.pystarter.leaderboard.entity.LeaderboardEntry;
 import com.pystarter.leaderboard.service.LeaderboardService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "全服排行榜接口", description = "PyStarter 玩家星数与经验排行榜")
 @RestController
 @RequestMapping("/api/leaderboard")
 public class LeaderboardController {
@@ -20,12 +23,14 @@ public class LeaderboardController {
         this.service = service;
     }
 
+    @Operation(summary = "查询全服 Top 50 排行榜")
     @GetMapping
     public Map<String, Object> list() {
         List<RankItemDto> items = service.top50();
         return Map.of("count", items.size(), "items", items);
     }
 
+    @Operation(summary = "上传或更新玩家成绩")
     @PostMapping("/submit")
     public Map<String, Object> submit(@Valid @RequestBody SubmitScoreRequest req) {
         LeaderboardEntry saved = service.submitScore(req);
