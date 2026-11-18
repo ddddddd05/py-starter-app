@@ -17,7 +17,9 @@ import com.pystarter.app.data.Store;
 import com.pystarter.app.databinding.ActivityBattleBinding;
 import com.pystarter.app.debug.StepDebugActivity;
 import com.pystarter.app.game.Fx;
+import com.pystarter.app.game.SoundFx;
 import com.pystarter.app.game.Sprites;
+import com.pystarter.app.strategy.QuestionStrategyFactory;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -50,6 +52,7 @@ public class BattleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityBattleBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        CodeToolbar.attach(binding.codeEditor);
         lessonId = getIntent().getIntExtra(EXTRA_LESSON_ID, 1);
 
         binding.hero.setSprite(Sprites.hero());
@@ -76,13 +79,17 @@ public class BattleActivity extends AppCompatActivity {
             return;
         }
         PyBridge.call(level -> PyBridge.call(lesson -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (level.has("error") || lesson.has("error")) {
                 binding.npcLine.setText(level.optString("error", lesson.optString("error")));
                 return;
             }
             st.info = level;
             st.questions = lesson.optJSONArray("questions");
-            st.theme = level.optJSONObject("chapter").optString("theme", "village");
+            JSONObject chapter = level.optJSONObject("chapter");
+            st.theme = chapter != null ? chapter.optString("theme", "village") : "village";
             startStage(0);
         }, "get_lesson", lessonId), "level_info", lessonId);
     }
@@ -129,6 +136,9 @@ public class BattleActivity extends AppCompatActivity {
             st.qLesson = st.revenge.optInt("lesson");
             st.qIndex = st.revenge.optInt("index");
             PyBridge.call(old -> {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
                 JSONArray qs = old.optJSONArray("questions");
                 st.question = qs == null ? new JSONObject() : qs.optJSONObject(st.qIndex);
                 setupEnemy(Sprites.enemy(st.theme, 3), getString(R.string.revenge_enemy, st.revenge.optString("name")));
@@ -190,45 +200,15 @@ public class BattleActivity extends AppCompatActivity {
         binding.codeEditor.setText(st.question.optString("starter"));
         binding.hint.setText(R.string.ask_fairy);          // 每场战斗提示重新从第 1 级开始
 
-        switch (st.type) {
-            case "choice":
-                // 选择题：点选项就是出招
-                binding.attack.setVisibility(View.GONE);
-                JSONArray options = st.question.optJSONArray("options");
-                for (int i = 0; options != null && i < options.length(); i++) {
-                    int choice = i;
-                    TextView b = new TextView(this, null, 0, R.style.PxButton);
-                    b.setText(options.optString(i));
-                    b.setAllCaps(false);
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    lp.topMargin = (int) (8 * getResources().getDisplayMetrics().density);
-                    b.setOnClickListener(v -> {
-                        st.lastChoice = choice;
-                        submit(String.valueOf(choice));
-                    });
-                    binding.options.addView(b, lp);
-                }
-                break;
-            case "fill":
-                binding.fillTemplate.setVisibility(View.VISIBLE);
-                binding.fillTemplate.setText(st.question.optString("template"));
-                binding.fillInput.setVisibility(View.VISIBLE);
-                break;
-            default:
-                binding.codeEditor.setVisibility(View.VISIBLE);
-                binding.run.setVisibility(View.VISIBLE);
-                binding.slow.setVisibility(View.VISIBLE);
-                break;
-        }
+        QuestionStrategyFactory.get(st.type).render(binding, st.question, (choice, ans) -> {
+            st.lastChoice = choice;
+            submit(ans);
+        });
         binding.scroll.scrollTo(0, 0);
     }
 
     private String currentAnswer() {
-        if ("fill".equals(st.type)) {
-            return binding.fillInput.getText().toString();
-        }
-        return binding.codeEditor.getText().toString();
+        return QuestionStrategyFactory.get(st.type).extractAnswer(binding);
     }
 
     private String inputsJson() {
@@ -355,11 +335,13 @@ public class BattleActivity extends AppCompatActivity {
             JSONObject e = events.optJSONObject(i);
             switch (e.optString("action")) {
                 case "attack":
+                    SoundFx.attack(this);
                     Fx.lunge(binding.hero, 60);
                     binding.enemy.postDelayed(() -> Fx.hit(binding.enemy), 200);
                     t = Math.max(t, 420);
                     break;
                 case "hurt":
+                    SoundFx.hit(this);
                     Fx.lunge(binding.enemy, -60);
                     binding.hero.postDelayed(() -> Fx.hit(binding.hero), 200);
                     break;
@@ -456,6 +438,7 @@ public class BattleActivity extends AppCompatActivity {
     // ---------- 结算 ----------
 
     private void win() {
+        SoundFx.win(this);
         int stars = GameStore.computeStars(st.mistakes, st.hintsUsed, st.usedNotes);
         int won = Math.min(st.battlesWon, 3);
         Store.streak(this, days -> {

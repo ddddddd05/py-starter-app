@@ -90,9 +90,18 @@
             style="@style/PxButton.Yellow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="6dp"
             android:layout_weight="1"
             android:text="@string/nav_progress" />
+
+        <TextView
+            android:id="@+id/navMaze"
+            style="@style/PxButton.Green"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="试炼迷宫" />
 
         <TextView
             android:id="@+id/navSettings"

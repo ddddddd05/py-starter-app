@@ -6,7 +6,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.pystarter.app.data.GameStore;
 import com.pystarter.app.databinding.ActivitySettingsBinding;
+import com.pystarter.app.game.SoundFx;
 
 /**
  * 设置：AI 老师用的 API Key（只保存在这台手机上，不写进代码、不上传），以及每日提醒开关。
@@ -38,6 +40,9 @@ public class SettingsActivity extends AppCompatActivity {
         binding.baseUrl.setText(prefs.getString(KEY_BASE_URL, DEFAULT_BASE_URL));
         binding.model.setText(prefs.getString(KEY_MODEL, DEFAULT_MODEL));
         binding.reminder.setChecked(prefs.getBoolean(KEY_REMINDER, true));
+        binding.soundFx.setChecked(prefs.getBoolean(SoundFx.KEY_SOUND, true));
+        binding.vibrateFx.setChecked(prefs.getBoolean(SoundFx.KEY_VIBRATE, true));
+        binding.demoMode.setChecked(GameStore.isDemoMode(this));
 
         binding.save.setOnClickListener(v -> {
             String baseUrl = binding.baseUrl.getText().toString().trim();
@@ -47,7 +52,10 @@ public class SettingsActivity extends AppCompatActivity {
                     .putString(KEY_BASE_URL, baseUrl.isEmpty() ? DEFAULT_BASE_URL : baseUrl)
                     .putString(KEY_MODEL, model.isEmpty() ? DEFAULT_MODEL : model)
                     .putBoolean(KEY_REMINDER, binding.reminder.isChecked())
+                    .putBoolean(SoundFx.KEY_SOUND, binding.soundFx.isChecked())
+                    .putBoolean(SoundFx.KEY_VIBRATE, binding.vibrateFx.isChecked())
                     .apply();
+            GameStore.setDemoMode(this, binding.demoMode.isChecked());
             ReminderWorker.schedule(this);
             Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
             finish();

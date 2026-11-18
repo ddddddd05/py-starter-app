@@ -75,6 +75,27 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/reminder" />
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/soundFx"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="8-bit 游戏音效" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/vibrateFx"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="受击 / 过关震动反馈" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/demoMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="演示模式（解锁全部关卡，方便直接体验）" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/save"
                 android:layout_width="match_parent"

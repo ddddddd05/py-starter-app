@@ -74,10 +74,17 @@ def build_messages(question: dict, concept: str, student_answer: str, check_resu
     return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": "\n".join(parts)}]
 
 
+def _endpoint(base_url: str) -> str:
+    url = base_url.strip().rstrip("/")
+    if url.endswith("/chat/completions"):
+        return url
+    return url + "/chat/completions"
+
+
 def call_llm(messages: list[dict], api_key: str, base_url: str, model: str, timeout: float = 20) -> str:
     """OpenAI 兼容接口（默认 DeepSeek）。只用标准库，不额外打包依赖进 App。"""
     req = urllib.request.Request(
-        base_url.rstrip("/") + "/chat/completions",
+        _endpoint(base_url),
         data=json.dumps({"model": model, "messages": messages, "temperature": 0.3, "max_tokens": 300}).encode(),
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -94,8 +101,15 @@ def hint(lesson_id: int, index: int, student_answer: str, check_result: dict | N
     q = lesson["questions"][index]
     builtin = q["hints"][level - 1]
     if not api_key:
-        return {"text": builtin, "source": "builtin", "blocked": False, "level": level,
-                "note": "没有设置 AI Key，显示的是内置提示。"}
+        if check_result and check_result.get("error"):
+            err_msg = check_result["error"]["message"]
+            text = f"小精灵诊断：{err_msg}\n💡 提示：{builtin}"
+        elif check_result and not check_result.get("correct", True) and check_result.get("feedback"):
+            text = f"{builtin}"
+        else:
+            text = builtin
+        return {"text": text, "source": "builtin", "blocked": False, "level": level,
+                "note": "离线小精灵诊断（填 Key 可解锁自由对话）"}
     try:
         reply = llm(build_messages(q, lesson["concept"], student_answer, check_result, level),
                     api_key, base_url, model)

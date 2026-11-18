@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/px_bg"
+    android:padding="12dp">
+
+    <!-- 顶部栏 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/px_btn_gray"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:text="← 返回"
+            android:textColor="@color/px_white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="试炼迷宫"
+            android:textColor="@color/px_yellow"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/next_maze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/px_btn_blue"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:text="下一关 →"
+            android:textColor="@color/px_white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- 迷宫地图画布 -->
+    <com.pystarter.app.game.MazeView
+        android:id="@+id/maze_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/px_panel"
+        android:padding="6dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 任务说明 / 实时反馈 -->
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/px_dialog"
+        android:padding="10dp"
+        android:text="用 move()、turn_right() 等指令控制小骑士！"
+        android:textColor="@color/px_white"
+        android:textSize="13sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 代码编辑区 -->
+    <EditText
+        android:id="@+id/code_input"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_code"
+        android:fontFamily="monospace"
+        android:gravity="top|start"
+        android:hint="在这里写 Python 代码指挥小骑士..."
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:padding="10dp"
+        android:textColor="@color/px_white"
+        android:textColorHint="@color/px_silver"
+        android:textSize="13sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 底部操作按钮 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/hint_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/px_btn_yellow"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            android:text="💡 提示"
+            android:textColor="@color/px_black"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="6dp" />
+
+        <TextView
+            android:id="@+id/reset_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/px_btn_gray"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            android:text="↺ 重置"
+            android:textColor="@color/px_white"
+            android:textSize="13sp"
+            android:layout_marginEnd="6dp" />
+
+        <TextView
+            android:id="@+id/run_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/px_btn_green"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:text="▶ 运行指挥骑士"
+            android:textColor="@color/px_white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

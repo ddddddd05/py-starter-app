@@ -26,7 +26,8 @@ public final class PyBridge {
         void onResult(JSONObject result);
     }
 
-    private static final ExecutorService WORKER = Executors.newSingleThreadExecutor();
+    // 多线程避免网络请求（AI 老师超时 20s）阻塞本地代码运行、判题和单步慢放；Python sys.settrace 为线程局部状态
+    private static final ExecutorService WORKER = Executors.newFixedThreadPool(3);
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
     private PyBridge() {}
@@ -60,6 +61,20 @@ public final class PyBridge {
             JSONArray array;
             try {
                 array = new JSONArray(api().callAttr("list_lessons").toString());
+            } catch (Exception e) {
+                array = new JSONArray();
+            }
+            JSONArray finalArray = array;
+            MAIN.post(() -> callback.onResult(finalArray));
+        });
+    }
+
+    /** 迷宫列表返回的是 JSON 数组，在后台线程调用。 */
+    public static void listMazes(ArrayCallback callback) {
+        WORKER.execute(() -> {
+            JSONArray array;
+            try {
+                array = new JSONArray(api().callAttr("list_mazes").toString());
             } catch (Exception e) {
                 array = new JSONArray();
             }

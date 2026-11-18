@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 应用图标：Python 蓝底 + 黄色代码符号 -->
+<!-- 应用图标：像素风小骑士 + 金色皇冠与披风 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp" android:height="48dp" android:viewportWidth="48" android:viewportHeight="48">
-    <path android:fillColor="#3776AB" android:pathData="M10,2h28a8,8 0,0 1,8 8v28a8,8 0,0 1,-8 8h-28a8,8 0,0 1,-8 -8v-28a8,8 0,0 1,8 -8z" />
-    <path android:fillColor="#FFD43B" android:pathData="M18.8,33.2L9.6,24l9.2,-9.2L16,12l-12,12 12,12 2.8,-2.8zM29.2,33.2l9.2,-9.2 -9.2,-9.2L32,12l12,12 -12,12 -2.8,-2.8z" />
+    <!-- 深蓝像素夜空背景 -->
+    <path android:fillColor="#16213E" android:pathData="M8,2h32a6,6 0,0 1,6 6v32a6,6 0,0 1,-6 6h-32a6,6 0,0 1,-6 -6v-32a6,6 0,0 1,6 -6z" />
+    <!-- 像素边框 -->
+    <path android:fillColor="#0F3460" android:pathData="M8,4h32v2h-32z M8,42h32v2h-32z M4,8h2v32h-2z M42,8h2v32h-2z" />
+    <!-- 金色皇冠 / 羽饰 -->
+    <path android:fillColor="#FFD43B" android:pathData="M18,8h3v3h-3z M27,8h3v3h-3z M18,11h12v3h-12z" />
+    <!-- 骑士银色头盔 -->
+    <path android:fillColor="#CBD5E1" android:pathData="M15,14h18v15h-18z" />
+    <path android:fillColor="#94A3B8" android:pathData="M15,14h3v15h-3z M30,14h3v15h-3z" />
+    <!-- 面甲黑缝与亮眼 -->
+    <path android:fillColor="#0F172A" android:pathData="M18,19h12v5h-12z" />
+    <path android:fillColor="#38BDF8" android:pathData="M20,20h3v3h-3z M25,20h3v3h-3z" />
+    <!-- 蓝色盔甲与金色腰带 + 宝剑 -->
+    <path android:fillColor="#3B82F6" android:pathData="M16,29h16v10h-16z" />
+    <path android:fillColor="#FFD43B" android:pathData="M16,33h16v2h-16z" />
+    <path android:fillColor="#E2E8F0" android:pathData="M35,18h3v14h-3z" />
+    <path android:fillColor="#F59E0B" android:pathData="M33,31h7v2h-7z M35,33h3v4h-3z" />
 </vector>

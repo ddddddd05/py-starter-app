@@ -23,6 +23,7 @@ import com.pystarter.app.data.Store;
 import com.pystarter.app.databinding.ActivityMainBinding;
 import com.pystarter.app.game.Fx;
 import com.pystarter.app.game.PixelSpriteView;
+import com.pystarter.app.game.SoundFx;
 import com.pystarter.app.game.Sprites;
 
 import org.json.JSONArray;
@@ -50,14 +51,28 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.navProgress.setOnClickListener(v -> startActivity(new Intent(this, ProgressActivity.class)));
-        binding.navSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+        binding.navProgress.setOnClickListener(v -> {
+            SoundFx.click(this);
+            startActivity(new Intent(this, ProgressActivity.class));
+        });
+        binding.navMaze.setOnClickListener(v -> {
+            SoundFx.click(this);
+            startActivity(new Intent(this, MazeActivity.class));
+        });
+        binding.navSettings.setOnClickListener(v -> {
+            SoundFx.click(this);
+            startActivity(new Intent(this, SettingsActivity.class));
+        });
 
         binding.loading.setVisibility(View.VISIBLE);
         PyBridge.call(info -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             binding.loading.setVisibility(View.GONE);
             mapInfo = info;
             buildMap();
+            maybeShowIntro();
         }, "map_info");
         askNotificationPermission();
     }
@@ -100,6 +115,59 @@ public class MainActivity extends AppCompatActivity {
         }
         int current = GameStore.currentLesson(this);
         int count = 0;
+
+        // 顶部快捷条：试炼迷宫卡片 + 演示模式开关
+        LinearLayout topCard = new LinearLayout(this);
+        topCard.setOrientation(LinearLayout.HORIZONTAL);
+        topCard.setGravity(Gravity.CENTER_VERTICAL);
+        topCard.setBackgroundResource(R.drawable.px_panel);
+        topCard.setPadding(dp(12), dp(10), dp(12), dp(10));
+        LinearLayout.LayoutParams tcp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        tcp.topMargin = dp(8);
+        tcp.bottomMargin = dp(6);
+
+        TextView mazeCard = new TextView(this, null, 0, R.style.PxText);
+        mazeCard.setText("⚔ 试炼迷宫");
+        mazeCard.setTextColor(0xFFFFEC27);
+        LinearLayout.LayoutParams mcp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        mazeCard.setOnClickListener(v -> {
+            SoundFx.click(this);
+            startActivity(new Intent(this, MazeActivity.class));
+        });
+        topCard.addView(mazeCard, mcp);
+
+        TextView rankPill = new TextView(this, null, 0, R.style.PxText_Small);
+        rankPill.setText("🏆 排行榜");
+        rankPill.setTextColor(0xFF000000);
+        rankPill.setBackgroundResource(R.drawable.px_btn_yellow);
+        rankPill.setPadding(dp(8), dp(4), dp(8), dp(4));
+        LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        rlp.rightMargin = dp(6);
+        rankPill.setOnClickListener(v -> {
+            SoundFx.click(this);
+            startActivity(new Intent(this, LeaderboardActivity.class));
+        });
+        topCard.addView(rankPill, rlp);
+
+        TextView demoPill = new TextView(this, null, 0, R.style.PxText_Small);
+        boolean demo = GameStore.isDemoMode(this);
+        demoPill.setText(demo ? "演示:全开" : "演示解锁");
+        demoPill.setTextColor(demo ? 0xFF000000 : 0xFFFFF1E8);
+        demoPill.setBackgroundResource(demo ? R.drawable.px_btn_green : R.drawable.px_btn_gray);
+        demoPill.setPadding(dp(8), dp(4), dp(8), dp(4));
+        demoPill.setOnClickListener(v -> {
+            SoundFx.click(this);
+            boolean next = !GameStore.isDemoMode(this);
+            GameStore.setDemoMode(this, next);
+            Toast.makeText(this, next ? "演示模式已开启：全部关卡已解锁！" : "演示模式已关闭", Toast.LENGTH_SHORT).show();
+            buildMap();
+        });
+        topCard.addView(demoPill);
+        box.addView(topCard, tcp);
+
+        int[] chapterBg = {0xFF152E24, 0xFF132336, 0xFF261A36};
         for (int c = 0; c < chapters.length(); c++) {
             JSONObject ch = chapters.optJSONObject(c);
             TextView banner = new TextView(this, null, 0, R.style.PxText_Title);
@@ -109,16 +177,29 @@ public class MainActivity extends AppCompatActivity {
             banner.setPadding(dp(8), dp(8), dp(8), dp(8));
             LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            bp.topMargin = dp(18);
-            bp.bottomMargin = dp(6);
+            bp.topMargin = dp(12);
+            bp.bottomMargin = dp(4);
             box.addView(banner, bp);
+
+            LinearLayout ground = new LinearLayout(this);
+            ground.setOrientation(LinearLayout.VERTICAL);
+            ground.setBackgroundColor(chapterBg[c % chapterBg.length]);
+            ground.setPadding(dp(4), dp(6), dp(4), dp(8));
 
             JSONArray ids = ch.optJSONArray("lessons");
             for (int i = 0; ids != null && i < ids.length(); i++) {
                 int id = ids.optInt(i);
                 JSONObject lesson = lessons.optJSONObject(id - 1);
-                box.addView(buildNode(id, lesson, i == ids.length() - 1, id == current, count++));
+                ground.addView(buildNode(id, lesson, i == ids.length() - 1, id == current, count++));
+                if (i < ids.length() - 1) {
+                    TextView pathDots = new TextView(this, null, 0, R.style.PxText_Small);
+                    pathDots.setText("⋮");
+                    pathDots.setTextColor(0xFF83769C);
+                    pathDots.setGravity(Gravity.CENTER);
+                    ground.addView(pathDots);
+                }
             }
+            box.addView(ground);
         }
         if (GameStore.allCleared(this)) {                // 全部通关：终点放一个宝箱
             PixelSpriteView chest = new PixelSpriteView(this);
@@ -204,10 +285,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void onNodeClick(int id, JSONObject lesson, boolean learnOpen, boolean learned, int stars) {
         if (!learnOpen) {
+            SoundFx.hit(this);
             Fx.shake(binding.mapContainer);
             Toast.makeText(this, getString(R.string.locked_toast, id - 1), Toast.LENGTH_SHORT).show();
             return;
         }
+        SoundFx.click(this);
         if (!learned) {
             openLearn(id);
             return;
@@ -231,6 +314,23 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, BattleActivity.class);
         intent.putExtra(BattleActivity.EXTRA_LESSON_ID, id);
         startActivity(intent);
+    }
+
+    /** 首次打开时的像素剧情开场：交代世界观并可一键跳过。 */
+    private void maybeShowIntro() {
+        if (GameStore.isIntroSeen(this)) {
+            return;
+        }
+        GameStore.markIntroSeen(this);
+        new AlertDialog.Builder(this)
+                .setTitle("✨ 欢迎来到代码王国")
+                .setMessage("小法师：不好了！代码王国被 Bug 怪占领了！\n\n"
+                        + "• 先学习概念、动手改代码，再去挑战 Bug 怪；\n"
+                        + "• 还可以随时点击「试炼迷宫」，写代码亲自指挥小骑士走格子！\n\n"
+                        + "（提示：右上角“演示解锁”可一键体验全部关卡）")
+                .setPositiveButton("开始冒险！", (d, w) -> SoundFx.star(this))
+                .setNegativeButton("跳过", null)
+                .show();
     }
 
     /** Android 13 起发通知要用户同意；只在第一次打开时问一次。 */

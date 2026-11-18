@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from functools import wraps
 
-from . import checker, game, lessons, runner, tracer, tutor
+from . import checker, game, lessons, maze, runner, tracer, tutor
 
 
 def _json_api(fn):
@@ -77,3 +77,13 @@ def hint(lesson_id, index, answer, level, api_key="", base_url="https://api.deep
     result = checker.check(int(lesson_id), int(index), answer) if str(answer).strip() else None
     return tutor.hint(int(lesson_id), int(index), str(answer), result, int(level),
                       api_key=str(api_key or ""), base_url=str(base_url), model=str(model))
+
+
+@_json_api
+def list_mazes():
+    return maze.list_mazes()
+
+
+@_json_api
+def run_maze(maze_id, code):
+    return maze.run_maze(int(maze_id), str(code))

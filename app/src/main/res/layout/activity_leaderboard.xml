@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/px_bg"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/px_btn_gray"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:text="← 返回"
+            android:textColor="@color/px_white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="🏆 全服排行榜（Spring Boot）"
+            android:textColor="@color/px_yellow"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/refresh_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/px_btn_blue"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:text="刷新"
+            android:textColor="@color/px_white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- 我的成绩与上传区 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/px_panel"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:id="@+id/my_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="我的进度：0 星 · 0 XP"
+            android:textColor="@color/px_white"
+            android:textSize="13sp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp">
+
+            <EditText
+                android:id="@+id/nickname_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_code"
+                android:hint="输入昵称"
+                android:padding="8dp"
+                android:textColor="@color/px_white"
+                android:textColorHint="@color/px_silver"
+                android:textSize="13sp"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/upload_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/px_btn_green"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="9dp"
+                android:text="上传成绩"
+                android:textColor="@color/px_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/server_url_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_code"
+            android:hint="后端地址（默认 http://10.0.2.2:8080）"
+            android:padding="8dp"
+            android:textColor="@color/px_silver"
+            android:textColorHint="@color/px_stone"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/status_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="正在连接排行榜后端..."
+        android:textColor="@color/px_silver"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/rank_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+</LinearLayout>

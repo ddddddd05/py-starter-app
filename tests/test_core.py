@@ -197,3 +197,15 @@ def test_api_returns_json_strings():
     assert json.loads(api.run_code("print(1+1)"))["output"] == "2\n"
     assert json.loads(api.hint(1, 2, "", 1))["source"] == "builtin"
     assert "error" in json.loads(api.get_lesson(99))
+
+
+def test_huge_range_blocked_before_oom():
+    r = runner.run("nums = list(range(10**9))\nprint(len(nums))")
+    assert not r["ok"]
+    assert r["error"]["kind"] == "timeout"
+    assert "range" in r["error"]["message"]
+
+
+def test_tutor_endpoint_normalizes_url():
+    assert tutor._endpoint("https://api.deepseek.com/") == "https://api.deepseek.com/chat/completions"
+    assert tutor._endpoint("https://api.deepseek.com/v1/chat/completions/") == "https://api.deepseek.com/v1/chat/completions"

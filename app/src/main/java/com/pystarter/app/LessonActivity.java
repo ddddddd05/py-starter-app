@@ -41,6 +41,7 @@ public class LessonActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLessonBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        CodeToolbar.attach(binding.exampleEditor);
         lessonId = getIntent().getIntExtra(EXTRA_LESSON_ID, 1);
 
         binding.npc.setSprite(Sprites.wizard());

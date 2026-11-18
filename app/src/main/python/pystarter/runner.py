@@ -17,16 +17,26 @@ import time
 MAX_STEPS = 200_000          # 最多执行多少行（正常练习题只需要几十到几千行）
 MAX_SECONDS = 2.0
 MAX_OUTPUT = 10_000          # 输出最多保留多少个字
+MAX_RANGE_LEN = 100_000      # 防止误写 list(range(10**9)) 导致手机端内存溢出
 
 FORBIDDEN_NAMES = {"open", "eval", "exec", "compile", "__import__", "globals", "locals", "vars",
                    "getattr", "setattr", "delattr", "exit", "quit", "breakpoint", "help", "memoryview"}
 
+
+def _safe_range(*args):
+    r = builtins.range(*args)
+    if len(r) > MAX_RANGE_LEN:
+        raise StopRun("range")
+    return r
+
+
 SAFE_BUILTINS = {name: getattr(builtins, name)
-                 for name in ("len", "range", "int", "float", "str", "bool", "list", "dict", "tuple", "set",
+                 for name in ("len", "int", "float", "str", "bool", "list", "dict", "tuple", "set",
                               "sum", "min", "max", "abs", "round", "sorted", "enumerate", "zip", "isinstance",
                               "type", "reversed", "map", "filter", "any", "all", "ord", "chr",
                               "Exception", "ValueError", "TypeError", "IndexError", "KeyError",
                               "ZeroDivisionError", "True", "False", "None")}
+SAFE_BUILTINS["range"] = _safe_range
 
 
 class StopRun(Exception):
@@ -128,9 +138,13 @@ def explain(e: BaseException, code: str) -> dict:
     kind = type(e).__name__
 
     if isinstance(e, StopRun):
-        msg = ("输出的内容太多了，是不是循环停不下来？" if str(e) == "output"
-               else "程序运行太久被停下了，很可能是死循环：检查循环条件会不会变成“不成立”。")
-        return {"kind": "timeout", "line": None, "message": msg}
+        if str(e) == "range":
+            msg = f"range( ) 范围太大了（超过 {MAX_RANGE_LEN:,}），练习里不需要这么大的数字，检查一下是不是多打了个 0。"
+        elif str(e) == "output":
+            msg = "输出的内容太多了，是不是循环停不下来？"
+        else:
+            msg = "程序运行太久被停下了，很可能是死循环：检查循环条件会不会变成“不成立”。"
+        return {"kind": "timeout", "line": line if str(e) == "range" else None, "message": msg}
     if isinstance(e, NeedInput):
         return {"kind": "input", "line": line, "message": f"{where}程序在等你输入，但这道题只准备了这么多输入，检查一下是不是多写了 input()。"}
     if isinstance(e, IndentationError):

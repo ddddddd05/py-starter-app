@@ -12,6 +12,10 @@ import com.pystarter.app.data.QuestionRecord;
 import com.pystarter.app.data.Store;
 import com.pystarter.app.databinding.ActivityProgressBinding;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /** 我的进度：答对了多少题、连续学习几天，以及错题本（点一下重新做）。 */
 public class ProgressActivity extends AppCompatActivity {
 
@@ -45,36 +49,46 @@ public class ProgressActivity extends AppCompatActivity {
         binding.playerStats.setText(getString(R.string.player_stats, level, GameStore.titleOf(level), xp,
                 GameStore.totalStars(this), GameStore.LESSON_COUNT * 3, revenge[0], revenge[1]));
 
-        java.util.Set<String> skills = GameStore.skills(this);
+        Set<String> skills = GameStore.skills(this);
+        String skillLine = skills.stream()
+                .sorted()
+                .collect(Collectors.joining("、"));
         binding.playerStats.append("\n" + (skills.isEmpty() ? getString(R.string.skill_book_empty)
-                : getString(R.string.skill_book, String.join("、", new java.util.TreeSet<>(skills)))));
+                : getString(R.string.skill_book, skillLine)));
 
-        // 徽章：拿到的亮色，没拿到的灰色并显示达成条件
+        // 徽章：使用 Java 8 Stream 统计与渲染，拿到的亮色，没拿到的灰色
         binding.badgeList.removeAllViews();
-        java.util.Set<String> owned = GameStore.badges(this);
-        for (String[] b : GameStore.BADGES) {
+        Set<String> owned = GameStore.badges(this);
+        long unlockedBadges = Arrays.stream(GameStore.BADGES)
+                .filter(b -> owned.contains(b[0]))
+                .count();
+        binding.playerStats.append("  |  徽章：" + unlockedBadges + "/" + GameStore.BADGES.length);
+
+        Arrays.stream(GameStore.BADGES).forEach(b -> {
             boolean has = owned.contains(b[0]);
             TextView row = new TextView(this, null, 0, R.style.PxText);
             row.setText(getString(has ? R.string.badge_owned : R.string.badge_locked, b[1], b[2]));
             row.setTextColor(has ? 0xFFFFEC27 : 0xFF5F574F);
             row.setPadding(0, 10, 0, 10);
             binding.badgeList.addView(row);
-        }
+        });
         Store.wrongQuestions(this, list -> {
             binding.wrongList.removeAllViews();
             binding.wrongEmpty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
-            for (QuestionRecord r : list) {
-                TextView row = (TextView) getLayoutInflater()
-                        .inflate(R.layout.item_wrong, binding.wrongList, false);
-                row.setText(getString(R.string.wrong_item, r.lessonId, r.questionIndex + 1, r.attempts));
-                row.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, QuestionActivity.class);
-                    intent.putExtra(QuestionActivity.EXTRA_LESSON_ID, r.lessonId);
-                    intent.putExtra(QuestionActivity.EXTRA_INDEX, r.questionIndex);
-                    startActivity(intent);
-                });
-                binding.wrongList.addView(row);
-            }
+            list.stream()
+                    .filter(r -> r.attempts > 0)
+                    .forEach(r -> {
+                        TextView row = (TextView) getLayoutInflater()
+                                .inflate(R.layout.item_wrong, binding.wrongList, false);
+                        row.setText(getString(R.string.wrong_item, r.lessonId, r.questionIndex + 1, r.attempts));
+                        row.setOnClickListener(v -> {
+                            Intent intent = new Intent(this, QuestionActivity.class);
+                            intent.putExtra(QuestionActivity.EXTRA_LESSON_ID, r.lessonId);
+                            intent.putExtra(QuestionActivity.EXTRA_INDEX, r.questionIndex);
+                            startActivity(intent);
+                        });
+                        binding.wrongList.addView(row);
+                    });
         });
     }
 

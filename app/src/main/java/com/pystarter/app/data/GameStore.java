@@ -29,6 +29,9 @@ public final class GameStore {
     private static final String KEY_BADGES = "badges";
     private static final String KEY_NO_HINT_RUN = "no_hint_run";
     private static final String KEY_REVENGE = "revenge";      // JSON：{"3_2": {"tag": "colon", "done": false}}
+    private static final String KEY_DEMO_MODE = "demo_mode";  // 演示模式：一键解锁全部关卡和迷宫，方便作品展示
+    private static final String KEY_INTRO_SEEN = "intro_seen";
+    private static final String KEY_MAZE_DONE = "maze_done";  // 迷宫通关集合
 
     /** 徽章：id、名字、说明。顺序就是在徽章页的显示顺序。 */
     public static final String[][] BADGES = {
@@ -60,14 +63,46 @@ public final class GameStore {
         prefs(ctx).edit().putStringSet(KEY_LEARNED, set).apply();
     }
 
-    /** 学习解锁：第 1 关一开始就开放，之后要先通过上一关的挑战。 */
+    /** 学习解锁：第 1 关一开始就开放，之后要先通过上一关的挑战；演示模式下全解锁。 */
     public static boolean isLearnUnlocked(Context ctx, int lessonId) {
+        if (isDemoMode(ctx)) {
+            return true;
+        }
         return learnUnlocked(lessonId, lessonId == 1 ? 0 : stars(ctx, lessonId - 1));
     }
 
-    /** 挑战解锁：这一关学完才能挑战。 */
+    /** 挑战解锁：这一关学完才能挑战；演示模式下全解锁。 */
     public static boolean isChallengeUnlocked(Context ctx, int lessonId) {
+        if (isDemoMode(ctx)) {
+            return true;
+        }
         return isLearnUnlocked(ctx, lessonId) && isLearned(ctx, lessonId);
+    }
+
+    public static boolean isDemoMode(Context ctx) {
+        return prefs(ctx).getBoolean(KEY_DEMO_MODE, false);
+    }
+
+    public static void setDemoMode(Context ctx, boolean enabled) {
+        prefs(ctx).edit().putBoolean(KEY_DEMO_MODE, enabled).apply();
+    }
+
+    public static boolean isIntroSeen(Context ctx) {
+        return prefs(ctx).getBoolean(KEY_INTRO_SEEN, false);
+    }
+
+    public static void markIntroSeen(Context ctx) {
+        prefs(ctx).edit().putBoolean(KEY_INTRO_SEEN, true).apply();
+    }
+
+    public static boolean isMazeCleared(Context ctx, int mazeId) {
+        return prefs(ctx).getStringSet(KEY_MAZE_DONE, new HashSet<>()).contains(String.valueOf(mazeId));
+    }
+
+    public static void markMazeCleared(Context ctx, int mazeId) {
+        Set<String> set = new HashSet<>(prefs(ctx).getStringSet(KEY_MAZE_DONE, new HashSet<>()));
+        set.add(String.valueOf(mazeId));
+        prefs(ctx).edit().putStringSet(KEY_MAZE_DONE, set).apply();
     }
 
     /** 当前该打哪一关：第一个还没通过的关。全部通过返回 LESSON_COUNT。 */
