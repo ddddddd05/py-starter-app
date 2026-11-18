@@ -49,7 +49,7 @@ def check(lesson_id: int, index: int, answer) -> dict:
         except (TypeError, ValueError):
             correct = False
         return {"correct": correct, "output": "", "error": None,
-                "feedback": "答对了！" if correct else "不对哦，再想想，或者点“问老师”。"}
+                "feedback": "答对了！" if correct else "不对哦，再想想，或者看看提示。"}
 
     if q["type"] == "fill":
         given = "".join(str(answer).split())

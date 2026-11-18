@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from functools import wraps
 
-from . import checker, lessons, runner, tutor
+from . import checker, game, lessons, runner, tutor
 
 
 def _json_api(fn):
@@ -45,7 +45,24 @@ def run_code(code, inputs_json="[]"):
 
 @_json_api
 def check(lesson_id, index, answer):
-    return checker.check(int(lesson_id), int(index), answer)
+    """判题结果额外带上 events / tag / npc，给闯关战斗用；原来的字段不变。"""
+    lid, idx = int(lesson_id), int(index)
+    return game.decorate(lid, idx, checker.check(lid, idx, answer))
+
+
+@_json_api
+def map_info():
+    return game.map_info()
+
+
+@_json_api
+def level_info(lesson_id):
+    return game.level_info(int(lesson_id))
+
+
+@_json_api
+def check_practice(lesson_id, answer):
+    return game.check_practice(int(lesson_id), answer)
 
 
 @_json_api
