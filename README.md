@@ -5,10 +5,10 @@
 一个安卓原生 App：用**像素风闯关游戏**带完全没学过编程的人入门 Python。12 关分 3 章，每关**先学后闯**：小法师用卡片和比喻讲概念、可以动手改代码运行，学会了再去打小怪、精英和 Boss。写的代码**在手机上真实运行**，做错了可以问小精灵（AI 老师）：只给提示、不给答案。
 
 <p align="center">
-  <img src="docs/demo.gif" width="270" alt="演示：闯关地图 → 学习（输入名字运行 input 示例）→ 挑战三战 → Boss 先错后对 → 复仇怪 → 结算升级">
+  <img src="docs/demo.gif" width="270" alt="演示：闯关地图 → 学习与单步慢放 → 挑战三战 → Boss 写代码（岔路口）→ 复仇怪 → 结算升级 → 迷宫模式 → 进度与徽章">
 </p>
 
-<p align="center">模拟器录屏（3 倍速）。完整视频：<a href="docs/demo.mp4">docs/demo.mp4</a></p>
+<p align="center">模拟器录屏（4 倍速）：学习与单步慢放 → 挑战与 Boss → 复仇怪 → 结算 → 迷宫模式。完整视频（原速、带音效）：<a href="docs/demo.mp4">docs/demo.mp4</a></p>
 
 > 开发方式：用 Claude Code 辅助开发（vibe coding），本人负责需求、玩法和交互设计、题目设计、验收和测试。玩法上的取舍和测试中发现的问题见 [docs/开发记录.md](docs/开发记录.md)。
 >
